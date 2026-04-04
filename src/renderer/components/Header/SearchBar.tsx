@@ -7,7 +7,7 @@ export function SearchBar() {
       <input 
         type="text" 
         placeholder="Search dependencies..."
-        className="h-8 w-64 bg-zinc-800/50 border border-zinc-700 rounded-md pl-9 pr-4 text-xs text-zinc-200 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all placeholder:text-zinc-600"
+        className="h-8 w-full bg-zinc-800/50 border border-zinc-700 rounded-md pl-9 pr-4 text-xs text-zinc-200 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all placeholder:text-zinc-600"
       />
     </div>
   );

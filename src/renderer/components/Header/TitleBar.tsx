@@ -12,12 +12,12 @@ export function TitleBar() {
           <TreePine size={18} className="text-blue-400" strokeWidth={2.5} />
         </div>
         
-        <span className="text-base font-bold text-zinc-50 tracking-tight">
+        <span className="text-[17px] font-extrabold text-zinc-50 tracking-tight antialiased">
           NuTreetious
         </span>
       </div>
 
-      <div className="h-full" style={{ WebkitAppRegion: 'no-drag' }}>
+      <div className="h-full flex items-start" style={{ WebkitAppRegion: 'no-drag' }}>
         <WindowControls />
       </div>
     </div>
