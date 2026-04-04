@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FileProcessor } from '../../services';
 import { useProjectStore } from '../../store';
+import { NotificationToast } from '../Common';
 import { Overlay } from './Overlay';
 import { TreeContainer } from './TreeContainer';
 
@@ -31,6 +32,7 @@ export function MainWindow() {
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
     >
+      <NotificationToast />
       <Overlay isDragging={isDragging} isLoading={isLoading} />
 
       <div className="flex-1 flex flex-col overflow-auto p-2">
