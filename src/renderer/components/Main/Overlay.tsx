@@ -1,4 +1,4 @@
-import { FileCheck, Loader2, Upload } from 'lucide-react';
+import { FileCheck, Loader2 } from 'lucide-react';
 
 export function Overlay({
   isDragging,

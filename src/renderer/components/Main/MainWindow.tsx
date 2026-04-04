@@ -4,8 +4,6 @@ import { useProjectStore } from '../../store';
 import { Overlay } from './Overlay';
 import { TreeContainer } from './TreeContainer';
 
-const ALLOWED_EXTENSIONS = ['csproj', 'sln', 'slnx'];
-
 export function MainWindow() {
   const [isDragging, setIsDragging] = useState(false);
   const { setProjectFromPath, isLoading } = useProjectStore();
