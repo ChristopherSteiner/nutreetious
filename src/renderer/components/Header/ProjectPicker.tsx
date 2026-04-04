@@ -8,7 +8,7 @@ export function ProjectPicker({ path, onOpen }: { path: string, onOpen: () => vo
     >
       <FolderOpen size={14} className="text-blue-400" />
       <span className="text-xs font-medium">
-        {path ? path.split(/[\\/]/).pop() : "Select assets.json"}
+        {path ? path.split(/[\\/]/).pop() : "Select solution or project..."}
       </span>
     </button>
   );

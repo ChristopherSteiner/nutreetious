@@ -1,21 +1,9 @@
-let electron = require("electron");
+import { contextBridge, ipcRenderer } from "electron";
 //#region electron/preload.ts
-electron.contextBridge.exposeInMainWorld("ipcRenderer", {
-	on(...args) {
-		const [channel, listener] = args;
-		return electron.ipcRenderer.on(channel, (event, ...args) => listener(event, ...args));
-	},
-	off(...args) {
-		const [channel, ...omit] = args;
-		return electron.ipcRenderer.off(channel, ...omit);
-	},
-	send(...args) {
-		const [channel, ...omit] = args;
-		return electron.ipcRenderer.send(channel, ...omit);
-	},
-	invoke(...args) {
-		const [channel, ...omit] = args;
-		return electron.ipcRenderer.invoke(channel, ...omit);
-	}
+contextBridge.exposeInMainWorld("electronAPI", {
+	minimize: () => ipcRenderer.send("window-minimize"),
+	maximize: () => ipcRenderer.send("window-maximize"),
+	close: () => ipcRenderer.send("window-close"),
+	openFileDialog: () => ipcRenderer.invoke("dialog:openFile")
 });
 //#endregion

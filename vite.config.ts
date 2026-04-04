@@ -11,9 +11,31 @@ export default defineConfig({
     electron({
       main: {
         entry: 'electron/main.ts',
+        vite: {
+          build: {
+            rollupOptions: {
+              external: ['electron'],
+              output: {
+                format: 'esm',
+                entryFileNames: '[name].mjs',
+              },
+            },
+          },
+        },
       },
       preload: {
         input: path.join(__dirname, 'electron/preload.ts'),
+        vite: {
+          build: {
+            rollupOptions: {
+              external: ['electron'],
+              output: {
+                format: 'esm',
+                entryFileNames: '[name].mjs',
+              },
+            },
+          },
+        },
       }
     }),
   ],
