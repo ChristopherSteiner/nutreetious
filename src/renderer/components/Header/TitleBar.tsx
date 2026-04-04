@@ -13,7 +13,7 @@ export function TitleBar() {
         </div>
 
         <span className="text-[17px] font-extrabold text-zinc-50 tracking-tight antialiased">
-          NuTreetious
+          Nutreetious
         </span>
       </div>
 

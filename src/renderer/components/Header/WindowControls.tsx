@@ -1,5 +1,5 @@
 import { Minus, Square, X } from 'lucide-react';
-import { WindowService } from '../../services/WindowService';
+import { WindowService } from '../../services';
 
 export function WindowControls() {
   return (

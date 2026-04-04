@@ -1,6 +1,6 @@
-import { BrowserWindow, app, ipcMain } from "electron";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { BrowserWindow, app, dialog, ipcMain } from "electron";
 //#region electron/main.ts
 var __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.APP_ROOT = path.join(__dirname, "..");
@@ -19,6 +19,20 @@ function registerIpcHandlers() {
 	});
 	ipcMain.on("window-close", () => {
 		win?.close();
+	});
+	ipcMain.handle("dialog:openFile", async () => {
+		const { canceled, filePaths } = await dialog.showOpenDialog({
+			properties: ["openFile"],
+			filters: [{
+				name: "Projects & Solutions",
+				extensions: [
+					"sln",
+					"slnx",
+					"csproj"
+				]
+			}]
+		});
+		return canceled ? null : filePaths[0];
 	});
 }
 function createWindow() {

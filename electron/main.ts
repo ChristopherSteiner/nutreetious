@@ -1,37 +1,47 @@
-import { app, ipcMain, BrowserWindow } from 'electron'
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Pfade definieren
-process.env.APP_ROOT = path.join(__dirname, '..')
-export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL 
-  ? path.join(process.env.APP_ROOT, 'public') 
-  : RENDERER_DIST
+process.env.APP_ROOT = path.join(__dirname, '..');
+export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
+export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
+process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
+  ? path.join(process.env.APP_ROOT, 'public')
+  : RENDERER_DIST;
 
-let win: BrowserWindow | null = null
+let win: BrowserWindow | null = null;
 
 // --- IPC LOGIK ---
 function registerIpcHandlers() {
   ipcMain.on('window-minimize', () => {
-    win?.minimize()
-  })
+    win?.minimize();
+  });
 
   ipcMain.on('window-maximize', () => {
-    if (!win) return
+    if (!win) return;
     if (win.isMaximized()) {
-      win.unmaximize()
+      win.unmaximize();
     } else {
-      win.maximize()
+      win.maximize();
     }
-  })
+  });
 
   ipcMain.on('window-close', () => {
-    win?.close()
-  })
+    win?.close();
+  });
+
+  ipcMain.handle('dialog:openFile', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [
+        { name: 'Projects & Solutions', extensions: ['sln', 'slnx', 'csproj'] },
+      ],
+    });
+    return canceled ? null : filePaths[0];
+  });
 }
 
 function createWindow() {
@@ -43,37 +53,37 @@ function createWindow() {
     frame: false,
     icon: path.join(process.env.VITE_PUBLIC, 'vite.svg'),
     webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'), 
+      preload: path.join(__dirname, 'preload.mjs'),
       sandbox: false,
-      contextIsolation: true
+      contextIsolation: true,
     },
-  })
+  });
 
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
+    win.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'))
+    win.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
 
   win.on('closed', () => {
-    win = null
-  })
+    win = null;
+  });
 }
 
 // --- APP LIFECYCLE ---
 app.whenReady().then(() => {
-  registerIpcHandlers()
-  createWindow()
-})
+  registerIpcHandlers();
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
-})
+});
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    createWindow();
   }
-})
+});
