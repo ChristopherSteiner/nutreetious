@@ -1,5 +1,6 @@
 {
   "recommendations": [
-    "tailwindcss.vscode-tailwindcss"
+    "tailwindcss.vscode-tailwindcss",
+    "biomejs.biome"
   ]
 }

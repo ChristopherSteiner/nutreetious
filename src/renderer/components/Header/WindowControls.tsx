@@ -6,6 +6,7 @@ export function WindowControls() {
     <div className="flex items-center" style={{ WebkitAppRegion: 'no-drag' }}>
       <button
         onClick={() => WindowService.minimize()}
+        type="button"
         className="p-2 hover:bg-zinc-800 text-zinc-500 hover:text-zinc-200 transition-colors"
       >
         <Minus size={20} strokeWidth={2} />
@@ -13,6 +14,7 @@ export function WindowControls() {
 
       <button
         onClick={() => WindowService.maximize()}
+        type="button"
         className="p-2 hover:bg-zinc-800 text-zinc-500 hover:text-zinc-200 transition-colors"
       >
         <Square size={16} strokeWidth={2} />
@@ -20,6 +22,7 @@ export function WindowControls() {
 
       <button
         onClick={() => WindowService.close()}
+        type="button"
         className="p-2 hover:bg-red-600 text-zinc-500 hover:text-white transition-colors"
       >
         <X size={22} strokeWidth={2} />

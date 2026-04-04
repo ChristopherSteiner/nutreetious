@@ -9,6 +9,7 @@ export function ProjectPicker({
 }) {
   return (
     <button
+      type="button"
       onClick={onOpen}
       className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-zinc-300 transition-all active:scale-95"
     >
