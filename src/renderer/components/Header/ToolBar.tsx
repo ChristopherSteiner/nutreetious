@@ -4,13 +4,13 @@ import { ToolBarActions } from './ToolBarActions';
 
 export function ToolBar() {
   return (
-    <div 
+    <div
       className="h-12 border-b border-zinc-800 bg-zinc-900 grid grid-cols-3 items-center px-4 w-full"
       style={{ WebkitAppRegion: 'no-drag' }}
     >
       {/* Spalte 1: Linksbündig */}
       <div className="flex justify-start">
-        <ProjectPicker path='' onOpen={() => {}} />
+        <ProjectPicker path="" onOpen={() => {}} />
       </div>
 
       {/* Spalte 2: Exakt in der Mitte des Windows */}

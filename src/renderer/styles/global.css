@@ -5,7 +5,7 @@
 @import "@fontsource/inter/800.css";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --color-brand-blue: var(--color-blue-500);
 }
 
@@ -14,9 +14,10 @@
 }
 
 @layer base {
-  html, body {
+  html,
+  body {
     @apply h-full overflow-hidden select-none font-sans bg-zinc-950 text-zinc-100;
-    
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;

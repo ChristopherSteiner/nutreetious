@@ -13,5 +13,5 @@ export const WindowService = {
 
   async selectAssetsFile(): Promise<string | null> {
     return await window.electronAPI.openFileDialog();
-  }
+  },
 };
