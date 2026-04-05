@@ -1,4 +1,4 @@
-import { BellOff, Trash2, X } from 'lucide-react';
+import { BellOff, Trash2 } from 'lucide-react';
 import { useNotificationStore } from '../../store';
 import { formatTimestamp } from '../../utils';
 
