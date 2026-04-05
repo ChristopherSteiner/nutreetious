@@ -1,14 +1,15 @@
-// src/renderer/components/NotificationToast.tsx
-
 import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 import { useNotificationStore } from '../../store';
 
 export function NotificationToast() {
   const { notifications, remove } = useNotificationStore();
+  const activeToasts = notifications.filter(
+    (notification) => notification.isToastActive,
+  );
 
   return (
     <div className="absolute bottom-4 right-4 z-100 flex flex-col-reverse gap-2 w-80 max-h-[calc(100%-2rem)] overflow-hidden pointer-events-none">
-      {notifications.map((notification) => (
+      {activeToasts.map((notification) => (
         <div
           key={notification.id}
           className="pointer-events-auto bg-zinc-900/95 backdrop-blur-sm border border-zinc-800 p-3 rounded-lg shadow-2xl flex items-start gap-3 animate-in slide-in-from-right-5 fade-in duration-300"

@@ -6,26 +6,43 @@ export interface Notification {
   message?: string;
   type: 'error' | 'success' | 'info';
   timestamp: number;
+  isToastActive: boolean;
 }
 
 interface NotificationState {
   notifications: Notification[];
-  add: (n: Omit<Notification, 'id' | 'timestamp'>) => void;
+  isDrawerOpen: boolean;
+  add: (n: Omit<Notification, 'id' | 'timestamp' | 'isToastActive'>) => void;
   remove: (id: string) => void;
+  clearAll: () => void;
+  toggleDrawer: () => void;
 }
 
 export const useNotificationStore = create<NotificationState>((set) => ({
   notifications: [],
-  add: (n) => {
+  isDrawerOpen: false,
+  add: (notification) => {
     const id = crypto.randomUUID();
-    const newNote = { ...n, id, timestamp: Date.now() };
-    set((state) => ({ notifications: [newNote, ...state.notifications] }));
+    set((state) => {
+      const shouldShowToast = !state.isDrawerOpen;
+
+      const newNote: Notification = {
+        ...notification,
+        id,
+        timestamp: Date.now(),
+        isToastActive: shouldShowToast,
+      };
+
+      return { notifications: [newNote, ...state.notifications] };
+    });
 
     setTimeout(() => {
       set((state) => ({
-        notifications: state.notifications.filter((note) => note.id !== id),
+        notifications: state.notifications.map((note) =>
+          note.id === id ? { ...note, isToastActive: false } : note,
+        ),
       }));
-    }, 50000);
+    }, 3000);
   },
   remove: (id) =>
     set((state) => ({
@@ -33,4 +50,6 @@ export const useNotificationStore = create<NotificationState>((set) => ({
         (notification) => notification.id !== id,
       ),
     })),
+  clearAll: () => set({ notifications: [] }),
+  toggleDrawer: () => set((state) => ({ isDrawerOpen: !state.isDrawerOpen })),
 }));

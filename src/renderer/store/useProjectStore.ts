@@ -54,6 +54,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       // todo: Hier kommt der Aufruf an den FileProcessor Service!
       // Wir simulieren das kurz, damit du das Overlay siehst:
       await new Promise((r) => setTimeout(r, 500));
+
+      useNotificationStore.getState().add({
+        title: 'Project Loaded',
+        message: `Successfully loaded project: ${name}`,
+        type: 'success',
+      });
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'An unexpected error occurred';
