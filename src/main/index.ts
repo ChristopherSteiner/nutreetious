@@ -51,7 +51,7 @@ function createWindow() {
     frame: false,
     icon: iconPath,
     webPreferences: {
-      preload: path.join(__dirname, '../preload/index.mjs'),
+      preload: path.join(__dirname, '/preload.mjs'),
       sandbox: false,
       contextIsolation: true,
     },

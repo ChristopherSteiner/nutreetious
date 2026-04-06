@@ -12,7 +12,7 @@ export interface UserSettings {
 
 export const DEFAULT_SETTINGS: UserSettings = {
   appearance: {
-    language: 'de',
+    language: 'en',
   },
   notifications: {
     timeout: 5000,

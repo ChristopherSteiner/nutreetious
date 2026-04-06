@@ -21,7 +21,7 @@ export class SettingsManager {
       const fileData = fs.readFileSync(this.filePath, 'utf-8');
       const userData = JSON.parse(fileData);
 
-      return this.deepMerge(DEFAULT_SETTINGS, userData);
+      return this.deepMerge({ ...DEFAULT_SETTINGS }, userData);
     } catch (error) {
       console.error('Fehler beim Laden der Settings:', error);
       return { ...DEFAULT_SETTINGS };

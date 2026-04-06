@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { DEFAULT_SETTINGS } from '../../common/Settings';
+import { useUserSettingStore } from './useUserSettingStore';
 
 export interface Notification {
   id: string;
@@ -11,21 +13,23 @@ export interface Notification {
 
 interface NotificationState {
   notifications: Notification[];
-  isDrawerOpen: boolean;
   add: (n: Omit<Notification, 'id' | 'timestamp' | 'isToastActive'>) => void;
   remove: (id: string) => void;
   clearAll: () => void;
-  toggleDrawer: () => void;
 }
 
 export const useNotificationStore = create<NotificationState>((set) => ({
   notifications: [],
-  isDrawerOpen: false,
   add: (notification) => {
     const id = crypto.randomUUID();
-    set((state) => {
-      const shouldShowToast = !state.isDrawerOpen;
+    const settings = useUserSettingStore.getState().settings;
 
+    const toastDuration =
+      settings?.notifications?.timeout ??
+      DEFAULT_SETTINGS.notifications.timeout;
+    const shouldShowToast = !settings?.windows.notificationDrawerOpen;
+
+    set((state) => {
       const newNote: Notification = {
         ...notification,
         id,
@@ -42,7 +46,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
           note.id === id ? { ...note, isToastActive: false } : note,
         ),
       }));
-    }, 3000);
+    }, toastDuration);
   },
   remove: (id) =>
     set((state) => ({
@@ -51,5 +55,4 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       ),
     })),
   clearAll: () => set({ notifications: [] }),
-  toggleDrawer: () => set((state) => ({ isDrawerOpen: !state.isDrawerOpen })),
 }));

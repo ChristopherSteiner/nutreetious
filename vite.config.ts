@@ -17,7 +17,7 @@ export default defineConfig({
               external: ['electron'],
               output: {
                 format: 'esm',
-                entryFileNames: '[name].mjs',
+                entryFileNames: 'main.mjs',
               },
             },
           },
@@ -31,7 +31,7 @@ export default defineConfig({
               external: ['electron'],
               output: {
                 format: 'esm',
-                entryFileNames: '[name].mjs',
+                entryFileNames: 'preload.mjs',
               },
             },
           },

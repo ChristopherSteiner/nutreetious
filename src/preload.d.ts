@@ -5,6 +5,8 @@ export interface IElectronAPI {
   openFileDialog: () => Promise<string | null>;
   readFile: (path: string) => Promise<string>;
   getFilePath: (file: File) => string;
+  getSettings: () => Promise<UserSettings>;
+  saveSettings: (settings: UserSettings) => Promise<void>;
 }
 
 declare global {

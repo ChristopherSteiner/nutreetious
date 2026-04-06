@@ -1,9 +1,11 @@
 import { BellOff, Trash2 } from 'lucide-react';
-import { useNotificationStore } from '../../store';
+import { useNotificationStore, useUserSettingStore } from '../../store';
 import { formatTimestamp } from '../../utils';
 
 export function NotificationDrawer() {
-  const { notifications, isDrawerOpen, clearAll } = useNotificationStore();
+  const { notifications, clearAll } = useNotificationStore();
+  const { settings } = useUserSettingStore();
+  const isDrawerOpen = settings?.windows.notificationDrawerOpen ?? false;
 
   if (!isDrawerOpen) return null;
 
