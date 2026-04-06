@@ -2,7 +2,8 @@ import * as path$1 from "node:path";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
-import * as fs from "node:fs";
+import * as fs$1 from "node:fs";
+import fs from "node:fs/promises";
 //#region src/common/Settings/UserSettings.ts
 var DEFAULT_SETTINGS = {
 	appearance: { language: "en" },
@@ -20,8 +21,8 @@ var SettingsManager = class {
 	}
 	load() {
 		try {
-			if (!fs.existsSync(this.filePath)) return { ...DEFAULT_SETTINGS };
-			const fileData = fs.readFileSync(this.filePath, "utf-8");
+			if (!fs$1.existsSync(this.filePath)) return { ...DEFAULT_SETTINGS };
+			const fileData = fs$1.readFileSync(this.filePath, "utf-8");
 			const userData = JSON.parse(fileData);
 			return this.deepMerge({ ...DEFAULT_SETTINGS }, userData);
 		} catch (error) {
@@ -33,8 +34,8 @@ var SettingsManager = class {
 		try {
 			this.settings = newSettings;
 			const dir = path$1.dirname(this.filePath);
-			if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-			fs.writeFileSync(this.filePath, JSON.stringify(this.settings, null, 2));
+			if (!fs$1.existsSync(dir)) fs$1.mkdirSync(dir, { recursive: true });
+			fs$1.writeFileSync(this.filePath, JSON.stringify(this.settings, null, 2));
 		} catch (error) {
 			console.error("Fehler beim Speichern der Settings:", error);
 		}
@@ -58,9 +59,61 @@ var SettingsManager = class {
 	}
 };
 //#endregion
+//#region src/main/Tree/NugetTreeManager.ts
+var NugetTreeManager = class {
+	getAssetsPath(csprojPath) {
+		const projectDir = path.dirname(csprojPath);
+		return path.join(projectDir, "obj", "project.assets.json");
+	}
+	async parseProjectAssets(csprojPath) {
+		const assetsPath = this.getAssetsPath(csprojPath);
+		const rawData = await fs.readFile(assetsPath, "utf-8");
+		const data = JSON.parse(rawData);
+		const { projectName, projectPath } = data.project.restore;
+		const frameworkTrees = {};
+		for (const [frameworkName, targetPackages] of Object.entries(data.targets)) {
+			const directDeps = data.project.frameworks[frameworkName]?.dependencies || {};
+			const roots = [];
+			for (const [name, info] of Object.entries(directDeps)) {
+				const version = info.target === "Package" ? info.version : "";
+				const node = this.buildRecursiveNode(name, version, targetPackages, "Package");
+				if (node) roots.push(node);
+			}
+			frameworkTrees[frameworkName] = roots;
+		}
+		return {
+			projectName,
+			projectPath,
+			frameworkTrees
+		};
+	}
+	buildRecursiveNode(name, version, targetPackages, type) {
+		const matchKey = Object.keys(targetPackages).find((key) => key.startsWith(`${name}/`));
+		if (!matchKey) return null;
+		const targetInfo = targetPackages[matchKey];
+		const actualVersion = matchKey.split("/")[1];
+		const hasConflict = version !== "" && !actualVersion.startsWith(version.replace(/[*[\]()]/g, ""));
+		const pkg = {
+			id: crypto.randomUUID(),
+			name,
+			referencedVersion: version || actualVersion,
+			actualVersion,
+			type,
+			hasConflict,
+			references: []
+		};
+		if (targetInfo.dependencies) for (const [depName, depVersion] of Object.entries(targetInfo.dependencies)) {
+			const childNode = this.buildRecursiveNode(depName, depVersion, targetPackages, "Transitive");
+			if (childNode) pkg.references.push(childNode);
+		}
+		return pkg;
+	}
+};
+//#endregion
 //#region src/main/index.ts
 var __dirname = path.dirname(fileURLToPath(import.meta.url));
 var settingsManager = new SettingsManager();
+var nugetTreeManager = new NugetTreeManager();
 process.env.APP_ROOT = path.join(__dirname, "../..");
 var VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
 var RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
@@ -90,6 +143,9 @@ function registerIpcHandlers() {
 	ipcMain.handle("settings:get", () => settingsManager.get());
 	ipcMain.handle("settings:save", (_event, newSettings) => {
 		settingsManager.save(newSettings);
+	});
+	ipcMain.handle("project:parseProjectAssets", async (_event, csprojPath) => {
+		return await nugetTreeManager.parseProjectAssets(csprojPath);
 	});
 }
 function createWindow() {

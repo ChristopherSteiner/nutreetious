@@ -10,4 +10,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getSettings: (): Promise<UserSettings> => ipcRenderer.invoke('settings:get'),
   saveSettings: (settings: UserSettings): Promise<void> =>
     ipcRenderer.invoke('settings:save', settings),
+  parseProjectAssets: (path: string) =>
+    ipcRenderer.invoke('project:parseProjectAssets', path),
 });

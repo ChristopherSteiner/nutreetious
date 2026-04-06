@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 	openFileDialog: () => ipcRenderer.invoke("dialog:openFile"),
 	getFilePath: (file) => webUtils.getPathForFile(file),
 	getSettings: () => ipcRenderer.invoke("settings:get"),
-	saveSettings: (settings) => ipcRenderer.invoke("settings:save", settings)
+	saveSettings: (settings) => ipcRenderer.invoke("settings:save", settings),
+	parseProjectAssets: (path) => ipcRenderer.invoke("project:parseProjectAssets", path)
 });
 //#endregion

@@ -3,9 +3,11 @@ import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type { UserSettings } from '../common/Settings';
 import { SettingsManager } from './Settings';
+import { NugetTreeManager } from './Tree';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const settingsManager = new SettingsManager();
+const nugetTreeManager = new NugetTreeManager();
 
 process.env.APP_ROOT = path.join(__dirname, '../..');
 export const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
@@ -38,6 +40,12 @@ function registerIpcHandlers() {
   ipcMain.handle('settings:save', (_event, newSettings: UserSettings) => {
     settingsManager.save(newSettings);
   });
+  ipcMain.handle(
+    'project:parseProjectAssets',
+    async (_event, csprojPath: string) => {
+      return await nugetTreeManager.parseProjectAssets(csprojPath);
+    },
+  );
 }
 
 function createWindow() {

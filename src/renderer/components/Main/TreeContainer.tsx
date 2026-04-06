@@ -2,7 +2,7 @@ import { useProjectStore } from '../../store/useProjectStore';
 // Später: import { TreeView } from './TreeView';
 
 export function TreeContainer() {
-  const projectPath = useProjectStore((state) => state.projectPath);
+  const projectPath = useProjectStore((state) => state.solutionPath);
 
   if (!projectPath) {
     return (

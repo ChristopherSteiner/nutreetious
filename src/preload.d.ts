@@ -7,6 +7,7 @@ export interface IElectronAPI {
   getFilePath: (file: File) => string;
   getSettings: () => Promise<UserSettings>;
   saveSettings: (settings: UserSettings) => Promise<void>;
+  parseProjectAssets: (csprojPath: string) => Promise<Project>;
 }
 
 declare global {

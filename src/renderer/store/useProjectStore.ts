@@ -1,10 +1,12 @@
 import { create } from 'zustand';
+import type { Project } from '../../common/Tree';
 import { FileProcessor } from '../services/FileProcessor';
 import { useNotificationStore } from './useNotificationStore';
 
 interface ProjectState {
-  projectPath: string | null;
-  projectName: string | null;
+  solutionPath: string | null;
+  solutionName: string | null;
+  projects: Project[];
   isLoading: boolean;
   selectProject: () => Promise<void>;
   setProjectFromPath: (path: string) => void;
@@ -12,8 +14,9 @@ interface ProjectState {
 }
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
-  projectPath: null,
-  projectName: null,
+  solutionPath: null,
+  solutionName: null,
+  projects: [],
   isLoading: false,
 
   selectProject: async () => {
@@ -44,16 +47,27 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       return;
     }
 
-    set({ isLoading: true });
+    set({ isLoading: true, projects: [] });
+
     try {
       const name = FileProcessor.getFileName(path);
 
-      // Hier kommt morgen deine "Spoiler-Logik" rein (Assets finden etc.)
-      set({ projectPath: path, projectName: name });
+      if (path.endsWith('.csproj')) {
+        const projectData = await window.electronAPI.parseProjectAssets(path);
 
-      // todo: Hier kommt der Aufruf an den FileProcessor Service!
-      // Wir simulieren das kurz, damit du das Overlay siehst:
-      await new Promise((r) => setTimeout(r, 500));
+        set({
+          solutionPath: path,
+          solutionName: name,
+          projects: [projectData], // Als Array speichern
+        });
+
+        console.log('Loaded project data:', projectData);
+      } else {
+        // TODO: Hier kommt später die Logik für .sln / .slnx
+        // 1. Alle .csproj Pfade aus der .sln extrahieren
+        // 2. Über alle Pfade loopen und parseProjectAssets aufrufen
+        set({ solutionPath: path, solutionName: name, projects: [] });
+      }
 
       useNotificationStore.getState().add({
         title: 'Project Loaded',

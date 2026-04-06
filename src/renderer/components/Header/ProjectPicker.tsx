@@ -2,7 +2,7 @@ import { FolderOpen } from 'lucide-react';
 import { useProjectStore } from '../../store/useProjectStore';
 
 export function ProjectPicker() {
-  const projectName = useProjectStore((state) => state.projectName);
+  const projectName = useProjectStore((state) => state.solutionName);
   const selectProject = useProjectStore((state) => state.selectProject);
 
   return (
