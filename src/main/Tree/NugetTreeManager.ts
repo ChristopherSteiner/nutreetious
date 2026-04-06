@@ -68,13 +68,13 @@ export class NugetTreeManager {
 
     const targetInfo = targetPackages[matchKey];
     const actualVersion = matchKey.split('/')[1];
+    const cleanRequested = version.replace(/[[\]\s,()]/g, '').split('*')[0];
 
     // Konflikt-Logik:
     // Wir markieren es als Konflikt/Warnung, wenn die Version von der angeforderten abweicht.
     // .NET Nuget Logik: "Nearest Wins". Die Version in der csproj gewinnt meistens.
     const hasConflict =
-      version !== '' &&
-      !actualVersion.startsWith(version.replace(/[*[\]()]/g, ''));
+      version !== '' && !actualVersion.startsWith(cleanRequested);
 
     const pkg: Package = {
       id: crypto.randomUUID(),

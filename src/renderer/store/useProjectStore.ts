@@ -58,10 +58,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         set({
           solutionPath: path,
           solutionName: name,
-          projects: [projectData], // Als Array speichern
+          projects: [projectData],
         });
-
-        console.log('Loaded project data:', projectData);
       } else {
         // TODO: Hier kommt später die Logik für .sln / .slnx
         // 1. Alle .csproj Pfade aus der .sln extrahieren

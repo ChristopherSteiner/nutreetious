@@ -92,7 +92,8 @@ var NugetTreeManager = class {
 		if (!matchKey) return null;
 		const targetInfo = targetPackages[matchKey];
 		const actualVersion = matchKey.split("/")[1];
-		const hasConflict = version !== "" && !actualVersion.startsWith(version.replace(/[*[\]()]/g, ""));
+		const cleanRequested = version.replace(/[[\]\s,()]/g, "").split("*")[0];
+		const hasConflict = version !== "" && !actualVersion.startsWith(cleanRequested);
 		const pkg = {
 			id: crypto.randomUUID(),
 			name,

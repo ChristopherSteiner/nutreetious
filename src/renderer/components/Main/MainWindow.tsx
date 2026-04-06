@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { FileProcessor } from '../../services';
 import { useProjectStore } from '../../store';
 import { NotificationToast } from '../Common';
@@ -22,22 +24,29 @@ export function MainWindow() {
   };
 
   return (
-    <section
-      className="relative flex-1 flex flex-col min-h-0"
-      aria-label="Main Window"
-      onDragOver={(e) => {
-        e.preventDefault();
-        setIsDragging(true);
-      }}
-      onDragLeave={() => setIsDragging(false)}
-      onDrop={handleDrop}
-    >
-      <NotificationToast />
-      <Overlay isDragging={isDragging} isLoading={isLoading} />
+    <DndProvider backend={HTML5Backend}>
+      <section
+        className="relative flex-1 flex flex-col min-h-0"
+        aria-label="Main Window"
+        onDragOver={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsDragging(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsDragging(false);
+        }}
+        onDrop={handleDrop}
+      >
+        <NotificationToast />
+        <Overlay isDragging={isDragging} isLoading={isLoading} />
 
-      <div className="flex-1 flex flex-col overflow-auto p-2">
-        <TreeContainer />
-      </div>
-    </section>
+        <div className="flex-1 flex flex-col overflow-auto p-2">
+          <TreeContainer />
+        </div>
+      </section>
+    </DndProvider>
   );
 }
