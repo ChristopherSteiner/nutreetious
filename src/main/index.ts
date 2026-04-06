@@ -1,12 +1,14 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import type { UserSettings } from '../common/Settings';
+import { SettingsManager } from './Settings';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const settingsManager = new SettingsManager();
 
-// Pfade definieren
-process.env.APP_ROOT = path.join(__dirname, '..');
-export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
+process.env.APP_ROOT = path.join(__dirname, '../..');
+export const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   ? path.join(process.env.APP_ROOT, 'public')
@@ -14,24 +16,13 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
 
 let win: BrowserWindow | null = null;
 
-// --- IPC LOGIK ---
 function registerIpcHandlers() {
-  ipcMain.on('window-minimize', () => {
-    win?.minimize();
-  });
-
+  ipcMain.on('window-minimize', () => win?.minimize());
   ipcMain.on('window-maximize', () => {
-    if (!win) return;
-    if (win.isMaximized()) {
-      win.unmaximize();
-    } else {
-      win.maximize();
-    }
+    if (win?.isMaximized()) win.unmaximize();
+    else win?.maximize();
   });
-
-  ipcMain.on('window-close', () => {
-    win?.close();
-  });
+  ipcMain.on('window-close', () => win?.close());
 
   ipcMain.handle('dialog:openFile', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -42,18 +33,25 @@ function registerIpcHandlers() {
     });
     return canceled ? null : filePaths[0];
   });
+
+  ipcMain.handle('settings:get', (): UserSettings => settingsManager.get());
+  ipcMain.handle('settings:save', (_event, newSettings: UserSettings) => {
+    settingsManager.save(newSettings);
+  });
 }
 
 function createWindow() {
+  const iconPath = path.join(process.env.VITE_PUBLIC || '', 'vite.svg');
+
   win = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 900,
     minHeight: 600,
     frame: false,
-    icon: path.join(process.env.VITE_PUBLIC, 'vite.svg'),
+    icon: iconPath,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
+      preload: path.join(__dirname, '../preload/index.mjs'),
       sandbox: false,
       contextIsolation: true,
     },
@@ -64,13 +62,8 @@ function createWindow() {
   } else {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
-
-  win.on('closed', () => {
-    win = null;
-  });
 }
 
-// --- APP LIFECYCLE ---
 app.whenReady().then(() => {
   registerIpcHandlers();
   createWindow();
