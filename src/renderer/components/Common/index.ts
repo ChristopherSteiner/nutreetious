@@ -1,1 +1,1 @@
-export { NotificationToast } from '../Notification/NotificationToast';
+export { Logo } from './Logo';

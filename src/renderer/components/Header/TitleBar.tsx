@@ -1,4 +1,4 @@
-import { TreePine } from 'lucide-react';
+import { Logo } from '../Common';
 import { WindowControls } from './WindowControls';
 
 export function TitleBar() {
@@ -9,7 +9,7 @@ export function TitleBar() {
     >
       <div className="flex items-center gap-3 px-4">
         <div className="bg-blue-500/10 p-1.5 rounded-md border border-blue-500/20">
-          <TreePine size={18} className="text-blue-400" strokeWidth={2.5} />
+          <Logo className="w-4.5 h-4.5 text-blue-400" />
         </div>
 
         <span className="text-[17px] font-extrabold text-zinc-50 tracking-tight antialiased">

@@ -49,7 +49,12 @@ function registerIpcHandlers() {
 }
 
 function createWindow() {
-  const iconPath = path.join(process.env.VITE_PUBLIC || '', 'vite.svg');
+  const isDev = !!process.env.VITE_DEV_SERVER_URL;
+  const iconPath = isDev
+    ? path.join(process.cwd(), 'public', 'app.ico')
+    : path.join(RENDERER_DIST, 'app.ico');
+
+  console.log('Icon Path:', iconPath); // Debug-Ausgabe für den Icon-Pfad
 
   win = new BrowserWindow({
     width: 1200,

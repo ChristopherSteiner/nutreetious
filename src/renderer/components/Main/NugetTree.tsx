@@ -4,97 +4,124 @@ import {
   ChevronRight,
   Package as PackageIcon,
 } from 'lucide-react';
-import type { KeyboardEvent } from 'react';
-import { type NodeRendererProps, Tree } from 'react-arborist';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 import type { Package } from '../../../common/Tree';
 
 interface Props {
   data: Package[];
 }
 
+interface FlatNode {
+  pkg: Package;
+  depth: number;
+  isExpanded: boolean;
+  hasChildren: boolean;
+}
+
 export const NugetTree = ({ data }: Props) => {
-  const rowHeight = 32;
-  const treeHeight = 500;
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const hasInitialExpanded = useRef(false);
 
-  return (
-    <div className="w-full h-auto overflow-visible">
-      <div
-        className="rounded-lg border border-zinc-900 bg-zinc-950/30 overflow-hidden transition-colors group-hover/tree:border-zinc-800"
-        style={{ height: treeHeight }}
-      >
-        <Tree
-          initialData={data}
-          disableDrag={true}
-          disableDrop={true}
-          openByDefault={true}
-          width="100%"
-          height={treeHeight}
-          indent={20}
-          rowHeight={rowHeight}
-          childrenAccessor={(pkg) => pkg.references}
-          idAccessor={(pkg) => pkg.id}
-          className="scrollbar-hide selection:bg-sky-500/30"
-        >
-          {Node}
-        </Tree>
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-zinc-950/80 to-transparent pointer-events-none opacity-100 transition-opacity rounded-b-lg" />
-    </div>
-  );
-};
+  const flattenedData = useMemo(() => {
+    const flat: FlatNode[] = [];
+    const traverse = (nodes: Package[], depth = 0) => {
+      for (const node of nodes) {
+        const isExpanded = expandedIds.has(node.id);
+        const children = node.references ?? []; // Sicherer Fallback statt !
+        const hasChildren = children.length > 0;
 
-function Node({ node, style, dragHandle }: NodeRendererProps<Package>) {
-  const pkg = node.data;
+        flat.push({ pkg: node, depth, isExpanded, hasChildren });
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      node.toggle();
+        if (hasChildren && isExpanded) {
+          traverse(children, depth + 1);
+        }
+      }
+    };
+    traverse(data);
+    return flat;
+  }, [data, expandedIds]);
+
+  useEffect(() => {
+    if (data.length > 0 && !hasInitialExpanded.current) {
+      const allIds = new Set<string>();
+      const collect = (nodes: Package[]) => {
+        nodes.forEach((n) => {
+          allIds.add(n.id);
+          const refs = n.references ?? [];
+          if (refs.length > 0) collect(refs);
+        });
+      };
+      collect(data);
+      setExpandedIds(allIds);
+      hasInitialExpanded.current = true;
     }
+  }, [data]);
+
+  const toggleNode = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   return (
-    <div
-      style={style}
-      ref={dragHandle}
-      className="flex items-center group cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-sky-500 rounded-md"
-      onClick={() => node.toggle()}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-      role="treeitem"
-      aria-expanded={node.isOpen}
-    >
-      <span className="w-5 h-5 flex items-center justify-center shrink-0">
-        {node.data.references.length > 0 &&
-          (node.isOpen ? (
-            <ChevronDown size={14} />
-          ) : (
-            <ChevronRight size={14} />
-          ))}
-      </span>
-
+    <div className="w-full rounded-lg border border-zinc-900 bg-zinc-950/30 overflow-hidden relative">
       <div
-        className={`flex items-center gap-2 px-2 py-1 rounded-md w-full transition-colors
-        ${pkg.hasConflict ? 'bg-amber-500/10 text-amber-500' : 'group-hover:bg-zinc-800/50 text-zinc-300'}`}
+        className="h-150"
+        style={{
+          WebkitMaskImage:
+            'linear-gradient(to top, transparent 0%, black 15%, black 100%)', // Oben hart, unten weich
+          maskImage:
+            'linear-gradient(to top, transparent 0%, black 15%, black 100%)', // Oben hart, unten weich
+        }}
       >
-        <PackageIcon
-          size={14}
-          className={pkg.type === 'Project' ? 'text-sky-500' : 'text-zinc-500'}
-        />
+        <Virtuoso
+          style={{ height: '100%' }}
+          data={flattenedData}
+          className="scrollbar-hide"
+          itemContent={(_index, node) => (
+            <button
+              type="button"
+              onClick={() => node.hasChildren && toggleNode(node.pkg.id)}
+              className={`flex items-center gap-2 px-4 py-1 w-full hover:bg-zinc-800/40 select-none text-left outline-none focus-visible:bg-zinc-800/60
+                ${node.pkg.hasConflict ? 'text-amber-500' : 'text-zinc-300'}`}
+              style={{ paddingLeft: `${node.depth * 20 + 16}px` }}
+            >
+              <div className="w-4 h-4 flex items-center justify-center shrink-0">
+                {node.hasChildren &&
+                  (node.isExpanded ? (
+                    <ChevronDown size={14} />
+                  ) : (
+                    <ChevronRight size={14} />
+                  ))}
+              </div>
 
-        <span className="text-sm font-medium truncate flex-1 leading-tight">
-          {pkg.name}
-        </span>
+              <PackageIcon
+                size={14}
+                className={
+                  node.pkg.type === 'Project' ? 'text-sky-500' : 'text-zinc-500'
+                }
+              />
 
-        <div className="text-[10px] font-mono flex gap-2 items-center shrink-0">
-          {pkg.hasConflict && (
-            <span className="flex items-center gap-1 text-amber-500 bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/20">
-              <AlertTriangle size={10} /> {pkg.referencedVersion}
-            </span>
+              <span className="text-sm font-medium truncate flex-1">
+                {node.pkg.name}
+              </span>
+
+              <div className="text-[10px] font-mono flex gap-2 shrink-0 opacity-80">
+                {node.pkg.hasConflict && (
+                  <span className="bg-amber-500/20 px-1 rounded border border-amber-500/20 flex items-center gap-1">
+                    <AlertTriangle size={10} /> {node.pkg.referencedVersion}
+                  </span>
+                )}
+                <span>v{node.pkg.actualVersion}</span>
+              </div>
+            </button>
           )}
-          <span className="opacity-50">v{pkg.actualVersion}</span>
-        </div>
+        />
       </div>
     </div>
   );
-}
+};

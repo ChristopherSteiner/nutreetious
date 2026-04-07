@@ -150,13 +150,15 @@ function registerIpcHandlers() {
 	});
 }
 function createWindow() {
+	const iconPath = !!process.env.VITE_DEV_SERVER_URL ? path.join(process.cwd(), "public", "app.ico") : path.join(RENDERER_DIST, "app.ico");
+	console.log("Icon Path:", iconPath);
 	win = new BrowserWindow({
 		width: 1200,
 		height: 800,
 		minWidth: 900,
 		minHeight: 600,
 		frame: false,
-		icon: path.join(process.env.VITE_PUBLIC || "", "vite.svg"),
+		icon: iconPath,
 		webPreferences: {
 			preload: path.join(__dirname, "/preload.mjs"),
 			sandbox: false,
