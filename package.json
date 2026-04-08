@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "biome lint ./src",
     "format": "biome format --write ./src",
-    "check": "biome check --write ./src"
+    "check": "biome check ./src"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",

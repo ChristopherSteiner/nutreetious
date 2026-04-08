@@ -65,8 +65,6 @@ function createWindow() {
     ? path.join(process.cwd(), 'public', 'app.ico')
     : path.join(RENDERER_DIST, 'app.ico');
 
-  console.log('Icon Path:', iconPath); // Debug-Ausgabe für den Icon-Pfad
-
   win = new BrowserWindow({
     width: 1200,
     height: 800,

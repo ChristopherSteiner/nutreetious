@@ -1,14 +1,1 @@
-import { contextBridge, ipcRenderer, webUtils } from "electron";
-//#region src/preload/index.ts
-contextBridge.exposeInMainWorld("electronAPI", {
-	minimize: () => ipcRenderer.send("window-minimize"),
-	maximize: () => ipcRenderer.send("window-maximize"),
-	close: () => ipcRenderer.send("window-close"),
-	openFileDialog: () => ipcRenderer.invoke("dialog:openFile"),
-	readFile: (path) => ipcRenderer.invoke("read-file", path),
-	getFilePath: (file) => webUtils.getPathForFile(file),
-	getSettings: () => ipcRenderer.invoke("settings:get"),
-	saveSettings: (settings) => ipcRenderer.invoke("settings:save", settings),
-	parseProjectAssets: (path) => ipcRenderer.invoke("project:parseProjectAssets", path)
-});
-//#endregion
+import{contextBridge as e,ipcRenderer as t,webUtils as n}from"electron";e.exposeInMainWorld(`electronAPI`,{minimize:()=>t.send(`window-minimize`),maximize:()=>t.send(`window-maximize`),close:()=>t.send(`window-close`),openFileDialog:()=>t.invoke(`dialog:openFile`),readFile:e=>t.invoke(`read-file`,e),getFilePath:e=>n.getPathForFile(e),getSettings:()=>t.invoke(`settings:get`),saveSettings:e=>t.invoke(`settings:save`,e),parseProjectAssets:e=>t.invoke(`project:parseProjectAssets`,e)});
