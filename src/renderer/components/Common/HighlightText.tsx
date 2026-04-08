@@ -17,18 +17,20 @@ export function HighlightText({
 
   return (
     <>
-      {parts.map((part, i) =>
-        part.toLowerCase() === query.toLowerCase() ? (
+      {parts.map((part, i) => {
+        const key = `part-${i}-${part}`;
+
+        return part.toLowerCase() === query.toLowerCase() ? (
           <mark
-            key={i}
+            key={key}
             className={`bg-transparent no-underline ${activeClassName}`}
           >
             {part}
           </mark>
         ) : (
-          part
-        ),
-      )}
+          <span key={key}>{part}</span>
+        );
+      })}
     </>
   );
 }

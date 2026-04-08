@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Project } from '../../common/Tree';
+import type { Project } from '../../common/tree';
 import { SolutionParser } from '../services';
 import { FileProcessor } from '../services/FileProcessor';
 import { useNotificationStore } from './useNotificationStore';

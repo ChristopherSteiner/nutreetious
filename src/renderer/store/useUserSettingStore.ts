@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { UserSettings } from '../../common/Settings';
+import type { UserSettings } from '../../common/settings';
 
 interface SettingsState {
   settings: UserSettings | null;

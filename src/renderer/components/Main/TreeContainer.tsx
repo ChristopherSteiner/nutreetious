@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronRight, LayoutGrid } from 'lucide-react';
 import { useState } from 'react';
-import type { Project } from '../../../common/Tree';
+import type { Project } from '../../../common/tree';
 import { useProjectStore } from '../../store/useProjectStore';
 import { Logo } from '../Common';
 import { NugetTree } from './NugetTree';

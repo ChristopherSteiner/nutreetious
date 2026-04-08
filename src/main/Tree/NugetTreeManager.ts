@@ -1,22 +1,12 @@
 // src/main/services/NugetTreeManager.ts
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { Package, PackageType, Project } from '../../common/Tree';
-
-interface AssetsJson {
-  project: {
-    restore: { projectName: string; projectPath: string };
-    frameworks: Record<
-      string,
-      { dependencies?: Record<string, { version: string; target: string }> }
-    >;
-  };
-  targets: Record<
-    string,
-    Record<string, { dependencies?: Record<string, string> }>
-  >;
-  libraries: Record<string, unknown>;
-}
+import type {
+  AssetsJson,
+  Package,
+  PackageType,
+  Project,
+} from '../../common/tree';
 
 export class NugetTreeManager {
   public getAssetsPath(csprojPath: string): string {

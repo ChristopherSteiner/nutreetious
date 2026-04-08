@@ -4,14 +4,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import * as fs$1 from "node:fs";
-//#region src/common/Settings/UserSettings.ts
+//#region src/common/settings/UserSettings.ts
 var DEFAULT_SETTINGS = {
 	appearance: { language: "en" },
 	notifications: { timeout: 5e3 },
 	windows: { notificationDrawerOpen: false }
 };
 //#endregion
-//#region src/main/Settings/SettingsManager.ts
+//#region src/main/settings/SettingsManager.ts
 var SettingsManager = class {
 	filePath;
 	settings;
@@ -59,7 +59,7 @@ var SettingsManager = class {
 	}
 };
 //#endregion
-//#region src/main/Tree/NugetTreeManager.ts
+//#region src/main/tree/NugetTreeManager.ts
 var NugetTreeManager = class {
 	getAssetsPath(csprojPath) {
 		const projectDir = path.dirname(csprojPath);

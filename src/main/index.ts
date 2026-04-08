@@ -2,9 +2,9 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
-import type { UserSettings } from '../common/Settings';
-import { SettingsManager } from './Settings';
-import { NugetTreeManager } from './Tree';
+import type { UserSettings } from '../common/settings';
+import { SettingsManager } from './settings';
+import { NugetTreeManager } from './tree';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const settingsManager = new SettingsManager();

@@ -1,5 +1,5 @@
 // src/renderer/utils/treeUtils.ts
-import type { Package } from '../../common/Tree';
+import type { Package } from '../../common/tree';
 
 export function filterTree(nodes: Package[], query: string): Package[] {
   if (!query) return nodes;

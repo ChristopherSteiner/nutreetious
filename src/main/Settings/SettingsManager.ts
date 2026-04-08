@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { app } from 'electron';
-import { DEFAULT_SETTINGS, type UserSettings } from '../../common/Settings';
+import { DEFAULT_SETTINGS, type UserSettings } from '../../common/settings';
 
 export class SettingsManager {
   private readonly filePath: string;

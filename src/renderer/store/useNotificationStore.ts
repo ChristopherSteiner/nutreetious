@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DEFAULT_SETTINGS } from '../../common/Settings';
+import { DEFAULT_SETTINGS } from '../../common/settings';
 import { useUserSettingStore } from './useUserSettingStore';
 
 export interface Notification {
