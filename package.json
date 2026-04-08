@@ -1,33 +1,80 @@
 {
   "name": "nutreetious",
+  "author": "Christopher Steiner <shiffty.hates.spam@gmail.com>",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "publish": "tsc && vite build && electron-builder --publish always",
+    "preview": "vite preview",
+    "lint": "biome lint ./src",
+    "format": "biome format --write ./src",
+    "check": "biome check ./src"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@tailwindcss/vite": "^4.2.2",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.7.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-virtuoso": "^4.18.4",
+    "tailwindcss": "^4.2.2",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.10",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
-    "@typescript-eslint/eslint-plugin": "^7.1.1",
-    "@typescript-eslint/parser": "^7.1.1",
     "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1",
     "typescript": "^5.2.2",
-    "vite": "^5.1.6",
-    "electron": "^30.0.1",
-    "electron-builder": "^24.13.3",
+    "vite": "^8.0.3",
     "vite-plugin-electron": "^0.28.6",
     "vite-plugin-electron-renderer": "^0.14.5"
   },
-  "main": "dist-electron/main.js"
+  "main": "dist-electron/main.mjs",
+  "build": {
+    "appId": "com.nutreetious.app",
+    "productName": "Nutreetious",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist",
+      "dist-electron",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "ChristopherSteiner",
+      "repo": "nutreetious"
+    }
+  }
 }
