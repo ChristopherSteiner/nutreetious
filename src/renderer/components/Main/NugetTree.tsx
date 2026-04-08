@@ -7,6 +7,8 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import type { Package } from '../../../common/Tree';
+import { useProjectStore } from '../../store';
+import { filterTree } from '../../utils';
 
 interface Props {
   data: Package[];
@@ -19,44 +21,56 @@ interface FlatNode {
   hasChildren: boolean;
 }
 
+const getAllCollapsibleIds = (nodes: Package[]) => {
+  const ids = new Set<string>();
+  const collect = (list: Package[]) => {
+    list.forEach((n) => {
+      if (n.references && n.references.length > 0) {
+        ids.add(n.id);
+        collect(n.references);
+      }
+    });
+  };
+  collect(nodes);
+  return ids;
+};
+
 export const NugetTree = ({ data }: Props) => {
+  const searchQuery = useProjectStore((state) => state.searchQuery);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
-  const hasInitialExpanded = useRef(false);
+  const lastDataRef = useRef<Package[] | null>(null);
+
+  const filteredPackages = useMemo(
+    () => filterTree(data, searchQuery),
+    [data, searchQuery],
+  );
+
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      setExpandedIds(getAllCollapsibleIds(filteredPackages));
+    } else {
+      setExpandedIds(getAllCollapsibleIds(data));
+    }
+
+    if (data !== lastDataRef.current) {
+      lastDataRef.current = data;
+    }
+  }, [data, searchQuery, filteredPackages]);
 
   const flattenedData = useMemo(() => {
     const flat: FlatNode[] = [];
     const traverse = (nodes: Package[], depth = 0) => {
       for (const node of nodes) {
         const isExpanded = expandedIds.has(node.id);
-        const children = node.references ?? []; // Sicherer Fallback statt !
+        const children = node.references ?? [];
         const hasChildren = children.length > 0;
-
         flat.push({ pkg: node, depth, isExpanded, hasChildren });
-
-        if (hasChildren && isExpanded) {
-          traverse(children, depth + 1);
-        }
+        if (hasChildren && isExpanded) traverse(children, depth + 1);
       }
     };
-    traverse(data);
+    traverse(filteredPackages);
     return flat;
-  }, [data, expandedIds]);
-
-  useEffect(() => {
-    if (data.length > 0 && !hasInitialExpanded.current) {
-      const allIds = new Set<string>();
-      const collect = (nodes: Package[]) => {
-        nodes.forEach((n) => {
-          allIds.add(n.id);
-          const refs = n.references ?? [];
-          if (refs.length > 0) collect(refs);
-        });
-      };
-      collect(data);
-      setExpandedIds(allIds);
-      hasInitialExpanded.current = true;
-    }
-  }, [data]);
+  }, [filteredPackages, expandedIds]);
 
   const toggleNode = (id: string) => {
     setExpandedIds((prev) => {

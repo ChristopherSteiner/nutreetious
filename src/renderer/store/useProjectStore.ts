@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Project } from '../../common/Tree';
+import { SolutionParser } from '../services';
 import { FileProcessor } from '../services/FileProcessor';
 import { useNotificationStore } from './useNotificationStore';
 
@@ -11,6 +12,8 @@ interface ProjectState {
   selectProject: () => Promise<void>;
   setProjectFromPath: (path: string) => void;
   setIsLoading: (loading: boolean) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
@@ -18,6 +21,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   solutionName: null,
   projects: [],
   isLoading: false,
+  searchQuery: '',
 
   selectProject: async () => {
     try {
@@ -51,25 +55,45 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
     try {
       const name = FileProcessor.getFileName(path);
+      const normalizedPath = path.replace(/\\/g, '/');
 
-      if (path.endsWith('.csproj')) {
-        const projectData = await window.electronAPI.parseProjectAssets(path);
-
+      if (normalizedPath.endsWith('.csproj')) {
+        const projectData =
+          await window.electronAPI.parseProjectAssets(normalizedPath);
         set({
-          solutionPath: path,
+          solutionPath: normalizedPath,
           solutionName: name,
           projects: [projectData],
         });
       } else {
-        // TODO: Hier kommt später die Logik für .sln / .slnx
-        // 1. Alle .csproj Pfade aus der .sln extrahieren
-        // 2. Über alle Pfade loopen und parseProjectAssets aufrufen
-        set({ solutionPath: path, solutionName: name, projects: [] });
+        const slnContent = await window.electronAPI.readFile(normalizedPath);
+        const relativeProjectPaths = await SolutionParser.getProjectPaths(
+          normalizedPath,
+          slnContent,
+        );
+
+        const slnDir = normalizedPath.substring(
+          0,
+          normalizedPath.lastIndexOf('/'),
+        );
+
+        const projectPromises = relativeProjectPaths.map(async (relPath) => {
+          const absoluteProjectPath = `${slnDir}/${relPath}`;
+          return window.electronAPI.parseProjectAssets(absoluteProjectPath);
+        });
+
+        const loadedProjects: Project[] = await Promise.all(projectPromises);
+
+        set({
+          solutionPath: normalizedPath,
+          solutionName: name,
+          projects: loadedProjects.filter((project) => project !== null),
+        });
       }
 
       useNotificationStore.getState().add({
-        title: 'Project Loaded',
-        message: `Successfully loaded project: ${name}`,
+        title: 'Success',
+        message: `${name} with ${get().projects.length} project(s) loaded.`,
         type: 'success',
       });
     } catch (error: unknown) {
@@ -86,4 +110,6 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   setIsLoading: (loading: boolean) => set({ isLoading: loading }),
+
+  setSearchQuery: (query: string) => set({ searchQuery: query }),
 }));

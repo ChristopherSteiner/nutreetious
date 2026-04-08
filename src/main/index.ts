@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
@@ -34,6 +35,16 @@ function registerIpcHandlers() {
       ],
     });
     return canceled ? null : filePaths[0];
+  });
+
+  ipcMain.handle('read-file', async (_event, filePath: string) => {
+    try {
+      const content = await readFile(filePath, 'utf-8');
+      return content;
+    } catch (error) {
+      console.error('Failed to read file:', error);
+      throw error;
+    }
   });
 
   ipcMain.handle('settings:get', (): UserSettings => settingsManager.get());

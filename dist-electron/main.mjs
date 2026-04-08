@@ -1,9 +1,9 @@
+import fs, { readFile } from "node:fs/promises";
 import * as path$1 from "node:path";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import * as fs$1 from "node:fs";
-import fs from "node:fs/promises";
 //#region src/common/Settings/UserSettings.ts
 var DEFAULT_SETTINGS = {
 	appearance: { language: "en" },
@@ -140,6 +140,14 @@ function registerIpcHandlers() {
 			}]
 		});
 		return canceled ? null : filePaths[0];
+	});
+	ipcMain.handle("read-file", async (_event, filePath) => {
+		try {
+			return await readFile(filePath, "utf-8");
+		} catch (error) {
+			console.error("Failed to read file:", error);
+			throw error;
+		}
 	});
 	ipcMain.handle("settings:get", () => settingsManager.get());
 	ipcMain.handle("settings:save", (_event, newSettings) => {

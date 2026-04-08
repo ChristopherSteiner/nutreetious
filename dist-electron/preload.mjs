@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 	maximize: () => ipcRenderer.send("window-maximize"),
 	close: () => ipcRenderer.send("window-close"),
 	openFileDialog: () => ipcRenderer.invoke("dialog:openFile"),
+	readFile: (path) => ipcRenderer.invoke("read-file", path),
 	getFilePath: (file) => webUtils.getPathForFile(file),
 	getSettings: () => ipcRenderer.invoke("settings:get"),
 	saveSettings: (settings) => ipcRenderer.invoke("settings:save", settings),

@@ -5,6 +5,7 @@ declare global {
       maximize: () => void;
       close: () => void;
       openFileDialog: () => Promise<string | null>;
+      readFile: (path: string) => Promise<string>;
       getFilePath: (file: File) => string;
       getSettings: () => Promise<import('./src/common/Settings').UserSettings>;
       saveSettings: (
