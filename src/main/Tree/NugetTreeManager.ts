@@ -70,9 +70,6 @@ export class NugetTreeManager {
     const actualVersion = matchKey.split('/')[1];
     const cleanRequested = version.replace(/[[\]\s,()]/g, '').split('*')[0];
 
-    // Konflikt-Logik:
-    // Wir markieren es als Konflikt/Warnung, wenn die Version von der angeforderten abweicht.
-    // .NET Nuget Logik: "Nearest Wins". Die Version in der csproj gewinnt meistens.
     const hasConflict =
       version !== '' && !actualVersion.startsWith(cleanRequested);
 

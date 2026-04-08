@@ -9,6 +9,7 @@ import { Virtuoso } from 'react-virtuoso';
 import type { Package } from '../../../common/Tree';
 import { useProjectStore } from '../../store';
 import { filterTree } from '../../utils';
+import { HighlightText } from '../Common';
 
 interface Props {
   data: Package[];
@@ -38,6 +39,7 @@ const getAllCollapsibleIds = (nodes: Package[]) => {
 export const NugetTree = ({ data }: Props) => {
   const searchQuery = useProjectStore((state) => state.searchQuery);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [isAtBottom, setIsAtBottom] = useState(false);
   const lastDataRef = useRef<Package[] | null>(null);
 
   const filteredPackages = useMemo(
@@ -81,21 +83,26 @@ export const NugetTree = ({ data }: Props) => {
     });
   };
 
+  const maskStyle = useMemo(
+    () => ({
+      WebkitMaskImage: isAtBottom
+        ? 'none'
+        : 'linear-gradient(to top, transparent 0%, black 15%, black 100%)',
+      maskImage: isAtBottom
+        ? 'none'
+        : 'linear-gradient(to top, transparent 0%, black 15%, black 100%)',
+    }),
+    [isAtBottom],
+  );
+
   return (
     <div className="w-full rounded-lg border border-zinc-900 bg-zinc-950/30 overflow-hidden relative">
-      <div
-        className="h-150"
-        style={{
-          WebkitMaskImage:
-            'linear-gradient(to top, transparent 0%, black 15%, black 100%)', // Oben hart, unten weich
-          maskImage:
-            'linear-gradient(to top, transparent 0%, black 15%, black 100%)', // Oben hart, unten weich
-        }}
-      >
+      <div className="h-150" style={maskStyle}>
         <Virtuoso
           style={{ height: '100%' }}
           data={flattenedData}
           className="scrollbar-hide"
+          atBottomStateChange={(atBottom) => setIsAtBottom(atBottom)}
           itemContent={(_index, node) => (
             <button
               type="button"
@@ -116,12 +123,19 @@ export const NugetTree = ({ data }: Props) => {
               <PackageIcon
                 size={14}
                 className={
-                  node.pkg.type === 'Project' ? 'text-sky-500' : 'text-zinc-500'
+                  node.pkg.type === 'Package' ? 'text-sky-500' : 'text-zinc-500'
                 }
               />
-
-              <span className="text-sm font-medium truncate flex-1">
-                {node.pkg.name}
+              <span
+                className={`text-sm font-medium truncate flex-1 ${
+                  node.pkg.hasConflict
+                    ? 'text-amber-500'
+                    : node.pkg.type === 'Transitive'
+                      ? 'text-zinc-400'
+                      : 'text-zinc-100'
+                }`}
+              >
+                <HighlightText text={node.pkg.name} query={searchQuery} />
               </span>
 
               <div className="text-[10px] font-mono flex gap-2 shrink-0 opacity-80">
