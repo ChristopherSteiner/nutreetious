@@ -41,7 +41,7 @@
     "appId": "com.nutreetious.app",
     "productName": "Nutreetious",
     "directories": {
-      "output": "release/${version}"
+      "output": "dist"
     },
     "files": [
       "dist",
