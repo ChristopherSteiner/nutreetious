@@ -2,6 +2,8 @@
 
 Nourish your dependency tree 🌱
 
+![Screenshot Dark Windows](docs/screenshot.png)
+
 A cross-platform Electron desktop application that visualizes and analyzes NuGet package dependencies in .NET projects. Quickly identify version conflicts, transitive dependencies, and dependency chains in your solutions.
 
 ## Features

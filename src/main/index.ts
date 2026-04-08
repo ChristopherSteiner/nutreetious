@@ -1,23 +1,19 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type { UserSettings } from '../common/settings';
 import { SettingsManager } from './settings';
 import { NugetTreeManager } from './tree';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const settingsManager = new SettingsManager();
 const nugetTreeManager = new NugetTreeManager();
 
-process.env.APP_ROOT = path.join(__dirname, '../..');
 export const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL;
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
-  ? path.join(process.env.APP_ROOT, 'public')
-  : RENDERER_DIST;
 
 let win: BrowserWindow | null = null;
+let RENDERER_DIST: string;
+let PRELOAD_PATH: string;
+let ICON_PATH: string;
 
 function registerIpcHandlers() {
   ipcMain.on('window-minimize', () => win?.minimize());
@@ -61,9 +57,6 @@ function registerIpcHandlers() {
 
 function createWindow() {
   const isDev = !!process.env.VITE_DEV_SERVER_URL;
-  const iconPath = isDev
-    ? path.join(process.cwd(), 'public', 'app.ico')
-    : path.join(RENDERER_DIST, 'app.ico');
 
   win = new BrowserWindow({
     width: 1200,
@@ -71,9 +64,9 @@ function createWindow() {
     minWidth: 900,
     minHeight: 600,
     frame: false,
-    icon: iconPath,
+    icon: isDev ? path.join(process.cwd(), 'public', 'app.ico') : ICON_PATH,
     webPreferences: {
-      preload: path.join(__dirname, '/preload.mjs'),
+      preload: PRELOAD_PATH,
       sandbox: false,
       contextIsolation: true,
     },
@@ -87,6 +80,11 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  const appPath = app.getAppPath();
+  RENDERER_DIST = path.join(appPath, 'dist');
+  PRELOAD_PATH = path.join(appPath, 'dist-electron', 'preload.mjs');
+  ICON_PATH = path.join(appPath, 'dist', 'app.ico');
+
   registerIpcHandlers();
   createWindow();
 });
