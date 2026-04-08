@@ -72,11 +72,6 @@
         "deb"
       ],
       "category": "Utility"
-    },
-    "publish": {
-      "provider": "github",
-      "owner": "ChristopherSteiner",
-      "repo": "nutreetious"
     }
   }
 }
