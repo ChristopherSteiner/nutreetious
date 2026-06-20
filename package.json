@@ -36,17 +36,17 @@
     "vite-plugin-electron": "^1.0.4",
     "vite-plugin-electron-renderer": "^1.0.0"
   },
-  "main": "dist-electron/main.mjs",
+  "main": "dist-electron/index.js",
   "build": {
     "appId": "com.nutreetious.app",
     "productName": "Nutreetious",
     "icon": "public/app.ico",
     "directories": {
-      "output": "dist"
+      "output": "dist-release"
     },
     "files": [
-      "dist",
-      "dist-electron",
+      "dist/**/*",
+      "dist-electron/**/*",
       "package.json"
     ],
     "win": {

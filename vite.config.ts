@@ -5,39 +5,16 @@ import { defineConfig } from 'vite';
 import electron from 'vite-plugin-electron/simple';
 
 export default defineConfig({
+  base: './',
   plugins: [
     react(),
     tailwindcss(),
     electron({
       main: {
         entry: 'src/main/index.ts',
-        vite: {
-          build: {
-            outDir: 'dist-electron',
-            rollupOptions: {
-              external: ['electron'],
-              output: {
-                format: 'esm',
-                entryFileNames: 'main.mjs',
-              },
-            },
-          },
-        },
       },
       preload: {
         input: path.join(__dirname, 'src/preload/index.ts'),
-        vite: {
-          build: {
-            outDir: 'dist-electron',
-            rollupOptions: {
-              external: ['electron'],
-              output: {
-                format: 'esm',
-                entryFileNames: 'preload.mjs',
-              },
-            },
-          },
-        },
       },
     }),
   ],
