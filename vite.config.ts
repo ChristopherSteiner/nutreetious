@@ -13,6 +13,7 @@ export default defineConfig({
         entry: 'src/main/index.ts',
         vite: {
           build: {
+            outDir: 'dist-electron',
             rollupOptions: {
               external: ['electron'],
               output: {
@@ -27,6 +28,7 @@ export default defineConfig({
         input: path.join(__dirname, 'src/preload/index.ts'),
         vite: {
           build: {
+            outDir: 'dist-electron',
             rollupOptions: {
               external: ['electron'],
               output: {
