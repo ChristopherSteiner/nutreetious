@@ -93,7 +93,7 @@ function ProjectSection({ project }: { project: Project }) {
         <div className="space-y-8 ml-3 border-l border-zinc-900 pl-6 py-2 animate-in fade-in slide-in-from-top-1 duration-200">
           {Object.entries(project.frameworkTrees).map(([framework, roots]) => (
             <section key={framework} className="relative">
-              <div className="absolute -left-[28.5px] top-2 w-1.5 h-1.5 rounded-full bg-zinc-800 border border-zinc-950" />
+              <div className="absolute left-[-28.5px] top-2 w-1.5 h-1.5 rounded-full bg-zinc-800 border border-zinc-950" />
 
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-[9px] font-black tracking-widest uppercase text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
