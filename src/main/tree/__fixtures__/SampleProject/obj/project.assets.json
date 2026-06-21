@@ -43,15 +43,15 @@
   "project": {
     "restore": {
       "projectName": "SampleProject",
-      "projectPath": "C:\\Fake\\SampleProject\\SampleProject.csproj",
+      "projectPath": "C:/Fake/SampleProject/SampleProject.csproj",
       "frameworks": {
         "net8.0": {
           "projectReferences": {
-            "C:\\Fake\\Sample.ProjectRef\\Sample.ProjectRef.csproj": {
-              "projectPath": "C:\\Fake\\Sample.ProjectRef\\Sample.ProjectRef.csproj"
+            "C:/Fake/Sample.ProjectRef/Sample.ProjectRef.csproj": {
+              "projectPath": "C:/Fake/Sample.ProjectRef/Sample.ProjectRef.csproj"
             },
-            "C:\\Fake\\Mismatched\\Mismatched.csproj": {
-              "projectPath": "C:\\Fake\\Mismatched\\Mismatched.csproj"
+            "C:/Fake/Mismatched/Mismatched.csproj": {
+              "projectPath": "C:/Fake/Mismatched/Mismatched.csproj"
             }
           }
         }

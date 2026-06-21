@@ -30,7 +30,7 @@ describe('NugetTreeManager', () => {
 
       expect(project.projectName).toBe('SampleProject');
       expect(project.projectPath).toBe(
-        'C:\\Fake\\SampleProject\\SampleProject.csproj',
+        'C:/Fake/SampleProject/SampleProject.csproj',
       );
     });
 
