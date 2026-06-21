@@ -116,8 +116,8 @@ describe('NugetTreeManager', () => {
 
       expect(projectRef).toMatchObject({
         name: 'Sample.ProjectRef',
-        referencedVersion: '1.0.0',
-        actualVersion: '1.0.0',
+        referencedVersion: null,
+        actualVersion: null,
         type: 'Project',
         isDirect: true,
         hasConflict: false,
@@ -144,11 +144,6 @@ describe('NugetTreeManager', () => {
     });
 
     it("recognizes a ProjectReference's own project dependency as a (transitive) Project node", async () => {
-      // Mirrors a real-world case: Implementation references DataAccess,
-      // which is itself a project, not a package. targets[tfm] tags it
-      // type: "project" even though it's reached transitively, so the tree
-      // should surface it as type: 'Project', isDirect: false -- not as a
-      // generic package.
       const manager = new NugetTreeManager();
 
       const project = await manager.parseProjectAssets(sampleCsprojPath);
@@ -160,7 +155,7 @@ describe('NugetTreeManager', () => {
 
       expect(nested).toMatchObject({
         name: 'Nested.Project',
-        actualVersion: '1.0.0',
+        actualVersion: null,
         type: 'Project',
         isDirect: false,
         hasConflict: false,
@@ -182,8 +177,8 @@ describe('NugetTreeManager', () => {
 
       expect(mismatched).toMatchObject({
         name: 'Mismatched.Core',
-        referencedVersion: '2.0.0',
-        actualVersion: '2.0.0',
+        referencedVersion: null,
+        actualVersion: null,
         type: 'Project',
         isDirect: true,
         hasConflict: false,

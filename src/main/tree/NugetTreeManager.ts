@@ -104,9 +104,6 @@ export class NugetTreeManager {
     const actualVersion = matchKey.split('/')[1];
     const cleanRequested = version.replace(/[[\]\s,()]/g, '').split('*')[0];
 
-    const hasConflict =
-      version !== '' && !actualVersion.startsWith(cleanRequested);
-
     const type: PackageType =
       targetInfo.type === 'project'
         ? 'Project'
@@ -114,14 +111,18 @@ export class NugetTreeManager {
           ? 'Framework'
           : 'Package';
 
+    const isProject = type === 'Project';
+    const hasConflict =
+      !isProject && version !== '' && !actualVersion.startsWith(cleanRequested);
+
     const pkg: Package = {
       id: crypto.randomUUID(),
       name: name,
-      referencedVersion: version || actualVersion,
-      actualVersion: actualVersion,
+      referencedVersion: isProject ? null : version || actualVersion,
+      actualVersion: isProject ? null : actualVersion,
       type,
       isDirect,
-      hasConflict: hasConflict,
+      hasConflict,
       references: [],
     };
 

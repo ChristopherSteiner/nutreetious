@@ -1,12 +1,14 @@
-import { ChevronDown, ChevronRight, LayoutGrid } from 'lucide-react';
+import { ChevronDown, ChevronRight, Info, LayoutGrid } from 'lucide-react';
 import { useState } from 'react';
 import type { Project } from '../../../common/tree';
 import { useProjectStore } from '../../store/useProjectStore';
+import { filterTree } from '../../utils';
 import { Logo } from '../Common';
 import { NugetTree } from './NugetTree';
 
 export function TreeContainer() {
-  const { solutionPath, solutionName, projects, isLoading } = useProjectStore();
+  const { solutionPath, solutionName, projects, isLoading, searchQuery } =
+    useProjectStore();
 
   if (isLoading) {
     return (
@@ -58,15 +60,28 @@ export function TreeContainer() {
 
       <div className="flex-1 overflow-y-auto p-6 space-y-12">
         {projects.map((project) => (
-          <ProjectSection key={project.projectPath} project={project} />
+          <ProjectSection
+            key={project.projectPath}
+            project={project}
+            searchQuery={searchQuery}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function ProjectSection({ project }: { project: Project }) {
+function ProjectSection({
+  project,
+  searchQuery,
+}: {
+  project: Project;
+  searchQuery: string;
+}) {
   const [isOpen, setIsOpen] = useState(true);
+  const frameworkEntries = Object.entries(project.frameworkTrees).filter(
+    ([, roots]) => !searchQuery || filterTree(roots, searchQuery).length > 0,
+  );
 
   return (
     <article className="flex flex-col">
@@ -91,22 +106,29 @@ function ProjectSection({ project }: { project: Project }) {
 
       {isOpen && (
         <div className="space-y-8 ml-3 border-l border-zinc-900 pl-6 py-2 animate-in fade-in slide-in-from-top-1 duration-200">
-          {Object.entries(project.frameworkTrees).map(([framework, roots]) => (
-            <section key={framework} className="relative">
-              <div className="absolute left-[-28.5px] top-2 w-1.5 h-1.5 rounded-full bg-zinc-800 border border-zinc-950" />
+          {frameworkEntries.length > 0 ? (
+            frameworkEntries.map(([framework, roots]) => (
+              <section key={framework} className="relative">
+                <div className="absolute left-[-28.5px] top-2 w-1.5 h-1.5 rounded-full bg-zinc-800 border border-zinc-950" />
 
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-[9px] font-black tracking-widest uppercase text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
-                  {framework}
-                </span>
-                <div className="h-px flex-1 bg-linear-to-r from-zinc-800 to-transparent" />
-              </div>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-[9px] font-black tracking-widest uppercase text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                    {framework}
+                  </span>
+                  <div className="h-px flex-1 bg-linear-to-r from-zinc-800 to-transparent" />
+                </div>
 
-              <div className="rounded-md overflow-hidden">
-                <NugetTree data={roots} />
-              </div>
-            </section>
-          ))}
+                <div className="rounded-md overflow-hidden">
+                  <NugetTree data={roots} />
+                </div>
+              </section>
+            ))
+          ) : (
+            <p className="flex items-center gap-1.5 text-xs text-zinc-400">
+              <Info size={13} className="text-zinc-500 shrink-0" />
+              No dependencies match &ldquo;{searchQuery}&rdquo;.
+            </p>
+          )}
         </div>
       )}
     </article>

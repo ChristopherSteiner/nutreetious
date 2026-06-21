@@ -22,7 +22,9 @@ interface TreeNodeProps {
 export function TreeNode({ node, searchQuery, onToggle }: TreeNodeProps) {
   const tooltipText = node.pkg.hasConflict
     ? `Requested: ${node.pkg.referencedVersion} | Resolved: ${node.pkg.actualVersion}`
-    : `Version: ${node.pkg.actualVersion}`;
+    : node.pkg.actualVersion
+      ? `Version: ${node.pkg.actualVersion}`
+      : 'Project reference';
 
   return (
     <button
@@ -74,7 +76,7 @@ export function TreeNode({ node, searchQuery, onToggle }: TreeNodeProps) {
             <AlertTriangle size={10} /> {node.pkg.referencedVersion}
           </span>
         )}
-        <span>v{node.pkg.actualVersion}</span>
+        {node.pkg.actualVersion && <span>v{node.pkg.actualVersion}</span>}
       </div>
     </button>
   );
