@@ -39,6 +39,22 @@ export class NugetTreeManager {
         );
         if (node) roots.push(node);
       }
+
+      const projectRefs =
+        data.project.restore.frameworks[frameworkName]?.projectReferences ||
+        {};
+
+      for (const refCsprojPath of Object.keys(projectRefs)) {
+        const name = path.basename(refCsprojPath, path.extname(refCsprojPath));
+        const node = this.buildRecursiveNode(
+          name,
+          '',
+          targetPackages,
+          'Project',
+        );
+        if (node) roots.push(node);
+      }
+
       frameworkTrees[frameworkName] = roots;
     }
 

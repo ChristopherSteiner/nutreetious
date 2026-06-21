@@ -34,7 +34,7 @@ describe('NugetTreeManager', () => {
       );
     });
 
-    it('builds one root per resolvable direct dependency', async () => {
+    it('builds one root per resolvable direct PackageReference and ProjectReference', async () => {
       const manager = new NugetTreeManager();
 
       const project = await manager.parseProjectAssets(sampleCsprojPath);
@@ -104,16 +104,36 @@ describe('NugetTreeManager', () => {
       expect(roots.find((pkg) => pkg.name === 'Ghost.Package')).toBeUndefined();
     });
 
-    it('always types project references as Package (current behavior)', async () => {
+    it('builds a ProjectReference as a Project-typed root, resolved by csproj basename', async () => {
       const manager = new NugetTreeManager();
 
       const project = await manager.parseProjectAssets(sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const projectRef = roots.find((pkg) => pkg.name === 'Sample.ProjectRef');
 
-      expect(projectRef?.type).toBe('Package');
-      expect(projectRef?.actualVersion).toBe('1.0.0');
-      expect(projectRef?.referencedVersion).toBe('1.0.0');
+      expect(projectRef).toMatchObject({
+        name: 'Sample.ProjectRef',
+        referencedVersion: '1.0.0',
+        actualVersion: '1.0.0',
+        type: 'Project',
+        hasConflict: false,
+      });
+    });
+
+    it("walks a ProjectReference's own dependencies as Transitive nodes", async () => {
+      const manager = new NugetTreeManager();
+
+      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const roots = project.frameworkTrees['net8.0'];
+      const projectRef = roots.find((pkg) => pkg.name === 'Sample.ProjectRef');
+
+      expect(projectRef?.references).toHaveLength(1);
+      expect(projectRef?.references[0]).toMatchObject({
+        name: 'Newtonsoft.Json',
+        actualVersion: '13.0.3',
+        type: 'Transitive',
+        hasConflict: false,
+      });
     });
   });
 });

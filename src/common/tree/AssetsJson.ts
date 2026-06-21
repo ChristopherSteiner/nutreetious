@@ -1,6 +1,15 @@
 export interface AssetsJson {
   project: {
-    restore: { projectName: string; projectPath: string };
+    restore: {
+      projectName: string;
+      projectPath: string;
+      frameworks: Record<
+        string,
+        {
+          projectReferences?: Record<string, { projectPath: string }>;
+        }
+      >;
+    };
     frameworks: Record<
       string,
       { dependencies?: Record<string, { version: string; target: string }> }

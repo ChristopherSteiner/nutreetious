@@ -15,7 +15,10 @@
         "type": "package"
       },
       "Sample.ProjectRef/1.0.0": {
-        "type": "project"
+        "type": "project",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        }
       }
     }
   },
@@ -28,15 +31,23 @@
   "project": {
     "restore": {
       "projectName": "SampleProject",
-      "projectPath": "C:\\Fake\\SampleProject\\SampleProject.csproj"
+      "projectPath": "C:\\Fake\\SampleProject\\SampleProject.csproj",
+      "frameworks": {
+        "net8.0": {
+          "projectReferences": {
+            "C:\\Fake\\Sample.ProjectRef\\Sample.ProjectRef.csproj": {
+              "projectPath": "C:\\Fake\\Sample.ProjectRef\\Sample.ProjectRef.csproj"
+            }
+          }
+        }
+      }
     },
     "frameworks": {
       "net8.0": {
         "dependencies": {
           "Newtonsoft.Json": { "target": "Package", "version": "[13.0.3, )" },
           "Serilog": { "target": "Package", "version": "[2.0.0, )" },
-          "Ghost.Package": { "target": "Package", "version": "[1.0.0, )" },
-          "Sample.ProjectRef": { "target": "Project" }
+          "Ghost.Package": { "target": "Package", "version": "[1.0.0, )" }
         }
       }
     }
