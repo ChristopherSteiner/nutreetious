@@ -42,6 +42,7 @@ describe('NugetTreeManager', () => {
 
       // Ghost.Package has no matching entry under targets and is dropped.
       expect(roots.map((pkg) => pkg.name).sort()).toEqual([
+        'Mismatched.Core',
         'Newtonsoft.Json',
         'Sample.ProjectRef',
         'Serilog',
@@ -133,6 +134,28 @@ describe('NugetTreeManager', () => {
         actualVersion: '13.0.3',
         type: 'Transitive',
         hasConflict: false,
+      });
+    });
+
+    it('resolves a ProjectReference whose package id differs from its csproj filename', async () => {
+      // Mismatched.csproj sets <AssemblyName>Mismatched.Core</AssemblyName>,
+      // so it shows up in targets/libraries as "Mismatched.Core", not
+      // "Mismatched". The projectReferences entry still points at
+      // Mismatched.csproj. Resolving by libraries[key].path (instead of
+      // guessing the name from the csproj filename) is required to find it.
+      const manager = new NugetTreeManager();
+
+      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const roots = project.frameworkTrees['net8.0'];
+      const mismatched = roots.find((pkg) => pkg.name === 'Mismatched.Core');
+
+      expect(mismatched).toMatchObject({
+        name: 'Mismatched.Core',
+        referencedVersion: '2.0.0',
+        actualVersion: '2.0.0',
+        type: 'Project',
+        hasConflict: false,
+        references: [],
       });
     });
   });

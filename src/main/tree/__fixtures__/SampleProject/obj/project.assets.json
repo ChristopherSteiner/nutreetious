@@ -19,6 +19,9 @@
         "dependencies": {
           "Newtonsoft.Json": "13.0.3"
         }
+      },
+      "Mismatched.Core/2.0.0": {
+        "type": "project"
       }
     }
   },
@@ -26,7 +29,12 @@
     "Newtonsoft.Json/13.0.3": { "type": "package" },
     "Serilog/2.5.0": { "type": "package" },
     "Serilog.Sinks.Console/4.1.0": { "type": "package" },
-    "Sample.ProjectRef/1.0.0": { "type": "project" }
+    "Sample.ProjectRef/1.0.0": { "type": "project" },
+    "Mismatched.Core/2.0.0": {
+      "type": "project",
+      "path": "../Mismatched/Mismatched.csproj",
+      "msbuildProject": "../Mismatched/Mismatched.csproj"
+    }
   },
   "project": {
     "restore": {
@@ -37,6 +45,9 @@
           "projectReferences": {
             "C:\\Fake\\Sample.ProjectRef\\Sample.ProjectRef.csproj": {
               "projectPath": "C:\\Fake\\Sample.ProjectRef\\Sample.ProjectRef.csproj"
+            },
+            "C:\\Fake\\Mismatched\\Mismatched.csproj": {
+              "projectPath": "C:\\Fake\\Mismatched\\Mismatched.csproj"
             }
           }
         }

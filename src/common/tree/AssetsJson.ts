@@ -19,5 +19,8 @@ export interface AssetsJson {
     string,
     Record<string, { dependencies?: Record<string, string> }>
   >;
-  libraries: Record<string, unknown>;
+  libraries: Record<
+    string,
+    { type?: string; path?: string; msbuildProject?: string }
+  >;
 }

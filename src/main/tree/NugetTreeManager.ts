@@ -21,6 +21,10 @@ export class NugetTreeManager {
 
     const { projectName, projectPath } = data.project.restore;
     const frameworkTrees: Record<string, Package[]> = {};
+    const projectRefNamesByPath = this.buildProjectRefNameLookup(
+      data.libraries,
+      path.dirname(projectPath),
+    );
 
     for (const [frameworkName, targetPackages] of Object.entries(
       data.targets,
@@ -45,7 +49,9 @@ export class NugetTreeManager {
         {};
 
       for (const refCsprojPath of Object.keys(projectRefs)) {
-        const name = path.basename(refCsprojPath, path.extname(refCsprojPath));
+        const name =
+          projectRefNamesByPath.get(this.normalizePath(refCsprojPath)) ??
+          path.basename(refCsprojPath, path.extname(refCsprojPath));
         const node = this.buildRecursiveNode(
           name,
           '',
@@ -59,6 +65,31 @@ export class NugetTreeManager {
     }
 
     return { projectName, projectPath, frameworkTrees };
+  }
+
+  private normalizePath(p: string): string {
+    return path.resolve(p).toLowerCase();
+  }
+
+  private buildProjectRefNameLookup(
+    libraries: AssetsJson['libraries'],
+    projectDir: string,
+  ): Map<string, string> {
+    const namesByPath = new Map<string, string>();
+
+    for (const [key, info] of Object.entries(libraries)) {
+      if (info.type !== 'project') continue;
+      const relativePath = info.path ?? info.msbuildProject;
+      if (!relativePath) continue;
+
+      const name = key.split('/')[0];
+      namesByPath.set(
+        this.normalizePath(path.resolve(projectDir, relativePath)),
+        name,
+      );
+    }
+
+    return namesByPath;
   }
 
   private buildRecursiveNode(
