@@ -39,25 +39,19 @@ export class NugetTreeManager {
           name,
           version,
           targetPackages,
-          'Package',
+          true,
         );
         if (node) roots.push(node);
       }
 
       const projectRefs =
-        data.project.restore.frameworks[frameworkName]?.projectReferences ||
-        {};
+        data.project.restore.frameworks[frameworkName]?.projectReferences || {};
 
       for (const refCsprojPath of Object.keys(projectRefs)) {
         const name =
           projectRefNamesByPath.get(this.normalizePath(refCsprojPath)) ??
           path.basename(refCsprojPath, path.extname(refCsprojPath));
-        const node = this.buildRecursiveNode(
-          name,
-          '',
-          targetPackages,
-          'Project',
-        );
+        const node = this.buildRecursiveNode(name, '', targetPackages, true);
         if (node) roots.push(node);
       }
 
@@ -95,8 +89,11 @@ export class NugetTreeManager {
   private buildRecursiveNode(
     name: string,
     version: string,
-    targetPackages: Record<string, { dependencies?: Record<string, string> }>,
-    type: PackageType,
+    targetPackages: Record<
+      string,
+      { type?: string; dependencies?: Record<string, string> }
+    >,
+    isDirect: boolean,
   ): Package | null {
     const matchKey = Object.keys(targetPackages).find((key) =>
       key.startsWith(`${name}/`),
@@ -110,12 +107,20 @@ export class NugetTreeManager {
     const hasConflict =
       version !== '' && !actualVersion.startsWith(cleanRequested);
 
+    const type: PackageType =
+      targetInfo.type === 'project'
+        ? 'Project'
+        : targetInfo.type === 'framework'
+          ? 'Framework'
+          : 'Package';
+
     const pkg: Package = {
       id: crypto.randomUUID(),
       name: name,
       referencedVersion: version || actualVersion,
       actualVersion: actualVersion,
-      type: type,
+      type,
+      isDirect,
       hasConflict: hasConflict,
       references: [],
     };
@@ -128,7 +133,7 @@ export class NugetTreeManager {
           depName,
           depVersion,
           targetPackages,
-          'Transitive',
+          false,
         );
         if (childNode) pkg.references.push(childNode);
       }

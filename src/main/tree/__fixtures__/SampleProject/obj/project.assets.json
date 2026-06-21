@@ -17,8 +17,12 @@
       "Sample.ProjectRef/1.0.0": {
         "type": "project",
         "dependencies": {
-          "Newtonsoft.Json": "13.0.3"
+          "Newtonsoft.Json": "13.0.3",
+          "Nested.Project": "1.0.0"
         }
+      },
+      "Nested.Project/1.0.0": {
+        "type": "project"
       },
       "Mismatched.Core/2.0.0": {
         "type": "project"

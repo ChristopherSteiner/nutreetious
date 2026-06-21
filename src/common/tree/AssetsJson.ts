@@ -17,7 +17,7 @@ export interface AssetsJson {
   };
   targets: Record<
     string,
-    Record<string, { dependencies?: Record<string, string> }>
+    Record<string, { type?: string; dependencies?: Record<string, string> }>
   >;
   libraries: Record<
     string,

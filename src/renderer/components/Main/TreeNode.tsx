@@ -2,6 +2,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronRight,
+  FolderCode,
   Package as PackageIcon,
 } from 'lucide-react';
 import type { Package } from '../../../common/tree';
@@ -41,17 +42,26 @@ export function TreeNode({ node, searchQuery, onToggle }: TreeNodeProps) {
             <ChevronRight size={14} />
           ))}
       </div>
-      <PackageIcon
-        size={14}
-        className={
-          node.pkg.type === 'Package' ? 'text-sky-500' : 'text-zinc-500'
-        }
-      />
+      {node.pkg.type === 'Project' ? (
+        <FolderCode
+          size={14}
+          className={node.pkg.isDirect ? 'text-violet-400' : 'text-zinc-500'}
+        />
+      ) : (
+        <PackageIcon
+          size={14}
+          className={
+            node.pkg.isDirect && node.pkg.type === 'Package'
+              ? 'text-sky-500'
+              : 'text-zinc-500'
+          }
+        />
+      )}
       <span
         className={`text-sm font-medium truncate flex-1 ${
           node.pkg.hasConflict
             ? 'text-amber-500'
-            : node.pkg.type === 'Transitive'
+            : !node.pkg.isDirect
               ? 'text-zinc-400'
               : 'text-zinc-100'
         }`}

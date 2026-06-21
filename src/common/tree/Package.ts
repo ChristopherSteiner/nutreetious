@@ -1,4 +1,4 @@
-export type PackageType = 'Project' | 'Package' | 'Framework' | 'Transitive';
+export type PackageType = 'Project' | 'Package' | 'Framework';
 
 export interface Package {
   id: string;
@@ -6,6 +6,7 @@ export interface Package {
   referencedVersion: string;
   actualVersion: string;
   type: PackageType;
+  isDirect: boolean;
   hasConflict: boolean;
   references: Package[];
 }

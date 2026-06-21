@@ -61,6 +61,7 @@ describe('NugetTreeManager', () => {
         referencedVersion: '[13.0.3, )',
         actualVersion: '13.0.3',
         type: 'Package',
+        isDirect: true,
         hasConflict: false,
         references: [],
       });
@@ -79,7 +80,7 @@ describe('NugetTreeManager', () => {
       expect(serilog?.hasConflict).toBe(true);
     });
 
-    it('builds transitive dependencies as Transitive nodes', async () => {
+    it('builds transitive dependencies with isDirect: false', async () => {
       const manager = new NugetTreeManager();
 
       const project = await manager.parseProjectAssets(sampleCsprojPath);
@@ -90,7 +91,8 @@ describe('NugetTreeManager', () => {
       expect(serilog?.references[0]).toMatchObject({
         name: 'Serilog.Sinks.Console',
         actualVersion: '4.1.0',
-        type: 'Transitive',
+        type: 'Package',
+        isDirect: false,
         hasConflict: false,
         references: [],
       });
@@ -117,23 +119,52 @@ describe('NugetTreeManager', () => {
         referencedVersion: '1.0.0',
         actualVersion: '1.0.0',
         type: 'Project',
+        isDirect: true,
         hasConflict: false,
       });
     });
 
-    it("walks a ProjectReference's own dependencies as Transitive nodes", async () => {
+    it("walks a ProjectReference's own package dependency as a Package node", async () => {
       const manager = new NugetTreeManager();
 
       const project = await manager.parseProjectAssets(sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const projectRef = roots.find((pkg) => pkg.name === 'Sample.ProjectRef');
+      const newtonsoft = projectRef?.references.find(
+        (pkg) => pkg.name === 'Newtonsoft.Json',
+      );
 
-      expect(projectRef?.references).toHaveLength(1);
-      expect(projectRef?.references[0]).toMatchObject({
+      expect(newtonsoft).toMatchObject({
         name: 'Newtonsoft.Json',
         actualVersion: '13.0.3',
-        type: 'Transitive',
+        type: 'Package',
+        isDirect: false,
         hasConflict: false,
+      });
+    });
+
+    it("recognizes a ProjectReference's own project dependency as a (transitive) Project node", async () => {
+      // Mirrors a real-world case: Implementation references DataAccess,
+      // which is itself a project, not a package. targets[tfm] tags it
+      // type: "project" even though it's reached transitively, so the tree
+      // should surface it as type: 'Project', isDirect: false -- not as a
+      // generic package.
+      const manager = new NugetTreeManager();
+
+      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const roots = project.frameworkTrees['net8.0'];
+      const projectRef = roots.find((pkg) => pkg.name === 'Sample.ProjectRef');
+      const nested = projectRef?.references.find(
+        (pkg) => pkg.name === 'Nested.Project',
+      );
+
+      expect(nested).toMatchObject({
+        name: 'Nested.Project',
+        actualVersion: '1.0.0',
+        type: 'Project',
+        isDirect: false,
+        hasConflict: false,
+        references: [],
       });
     });
 
@@ -154,6 +185,7 @@ describe('NugetTreeManager', () => {
         referencedVersion: '2.0.0',
         actualVersion: '2.0.0',
         type: 'Project',
+        isDirect: true,
         hasConflict: false,
         references: [],
       });
