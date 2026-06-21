@@ -1,0 +1,70 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "Newtonsoft.Json/13.0.3": {
+        "type": "package"
+      },
+      "Serilog/2.5.0": {
+        "type": "package",
+        "dependencies": {
+          "Serilog.Sinks.Console": "4.1.0"
+        }
+      },
+      "Serilog.Sinks.Console/4.1.0": {
+        "type": "package"
+      },
+      "Sample.ProjectRef/1.0.0": {
+        "type": "project",
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3",
+          "Nested.Project": "1.0.0"
+        }
+      },
+      "Nested.Project/1.0.0": {
+        "type": "project"
+      },
+      "Mismatched.Core/2.0.0": {
+        "type": "project"
+      }
+    }
+  },
+  "libraries": {
+    "Newtonsoft.Json/13.0.3": { "type": "package" },
+    "Serilog/2.5.0": { "type": "package" },
+    "Serilog.Sinks.Console/4.1.0": { "type": "package" },
+    "Sample.ProjectRef/1.0.0": { "type": "project" },
+    "Mismatched.Core/2.0.0": {
+      "type": "project",
+      "path": "../Mismatched/Mismatched.csproj",
+      "msbuildProject": "../Mismatched/Mismatched.csproj"
+    }
+  },
+  "project": {
+    "restore": {
+      "projectName": "SampleProject",
+      "projectPath": "C:/Fake/SampleProject/SampleProject.csproj",
+      "frameworks": {
+        "net8.0": {
+          "projectReferences": {
+            "C:/Fake/Sample.ProjectRef/Sample.ProjectRef.csproj": {
+              "projectPath": "C:/Fake/Sample.ProjectRef/Sample.ProjectRef.csproj"
+            },
+            "C:/Fake/Mismatched/Mismatched.csproj": {
+              "projectPath": "C:/Fake/Mismatched/Mismatched.csproj"
+            }
+          }
+        }
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "dependencies": {
+          "Newtonsoft.Json": { "target": "Package", "version": "[13.0.3, )" },
+          "Serilog": { "target": "Package", "version": "[2.0.0, )" },
+          "Ghost.Package": { "target": "Package", "version": "[1.0.0, )" }
+        }
+      }
+    }
+  }
+}
