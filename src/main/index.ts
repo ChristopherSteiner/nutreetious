@@ -82,7 +82,7 @@ function createWindow() {
 app.whenReady().then(() => {
   const appPath = app.getAppPath();
   RENDERER_DIST = path.join(appPath, 'dist');
-  PRELOAD_PATH = path.join(appPath, 'dist-electron', 'preload.mjs');
+  PRELOAD_PATH = path.join(appPath, 'dist-electron', 'preload.cjs');
   ICON_PATH = path.join(appPath, 'dist', 'app.ico');
 
   registerIpcHandlers();
