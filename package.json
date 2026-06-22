@@ -4,6 +4,10 @@
   "private": true,
   "version": "0.3.1",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ChristopherSteiner/nutreetious"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder --publish never",
@@ -19,9 +23,11 @@
     "@fontsource/inter": "^5.2.8",
     "@tailwindcss/vite": "^4.3.1",
     "framer-motion": "^12.40.0",
+    "i18next": "^26.3.1",
     "lucide-react": "^1.21.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.8",
     "react-virtuoso": "^4.18.7",
     "tailwindcss": "^4.3.1",
     "zustand": "^5.0.14"

@@ -6,6 +6,7 @@ interface SettingsState {
   isLoaded: boolean;
   loadSettings: () => Promise<void>;
   toggleNotificationDrawer: () => void;
+  setLanguage: (language: string) => void;
 }
 
 export const useUserSettingStore = create<SettingsState>((set, get) => ({
@@ -27,6 +28,20 @@ export const useUserSettingStore = create<SettingsState>((set, get) => ({
         ...settings.windows,
         notificationDrawerOpen: !settings.windows.notificationDrawerOpen,
       },
+    };
+
+    set({ settings: updated });
+
+    window.electronAPI.saveSettings(updated);
+  },
+
+  setLanguage: (language) => {
+    const settings = get().settings;
+    if (!settings) return;
+
+    const updated = {
+      ...settings,
+      appearance: { ...settings.appearance, language },
     };
 
     set({ settings: updated });

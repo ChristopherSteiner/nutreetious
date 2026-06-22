@@ -5,6 +5,7 @@ import type {
   AssetsJson,
   Package,
   PackageType,
+  ParseProjectAssetsResult,
   Project,
 } from '../../common/tree';
 
@@ -14,9 +15,21 @@ export class NugetTreeManager {
     return path.join(projectDir, 'obj', 'project.assets.json');
   }
 
-  async parseProjectAssets(csprojPath: string): Promise<Project> {
+  async parseProjectAssets(
+    csprojPath: string,
+  ): Promise<ParseProjectAssetsResult> {
     const assetsPath = this.getAssetsPath(csprojPath);
-    const rawData = await fs.readFile(assetsPath, 'utf-8');
+
+    let rawData: string;
+    try {
+      rawData = await fs.readFile(assetsPath, 'utf-8');
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return { ok: false, reason: 'ASSETS_NOT_FOUND', assetsPath };
+      }
+      throw error;
+    }
+
     const data: AssetsJson = JSON.parse(rawData);
 
     const { projectName, projectPath } = data.project.restore;
@@ -58,7 +71,8 @@ export class NugetTreeManager {
       frameworkTrees[frameworkName] = roots;
     }
 
-    return { projectName, projectPath, frameworkTrees };
+    const project: Project = { projectName, projectPath, frameworkTrees };
+    return { ok: true, project };
   }
 
   private normalizePath(p: string): string {

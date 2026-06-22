@@ -1,8 +1,23 @@
 import { create } from 'zustand';
 import type { Project } from '../../common/tree';
+import i18n from '../i18n';
 import { SolutionParser } from '../services';
 import { FileProcessor } from '../services/FileProcessor';
 import { useNotificationStore } from './useNotificationStore';
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error
+    ? error.message
+    : i18n.t('notifications.unexpectedError');
+}
+
+function notifyAssetsNotFound(assetsPath: string) {
+  useNotificationStore.getState().add({
+    title: i18n.t('notifications.loadingFailed'),
+    message: i18n.t('notifications.assetsNotFound', { path: assetsPath }),
+    type: 'error',
+  });
+}
 
 interface ProjectState {
   solutionPath: string | null;
@@ -30,12 +45,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         await get().setProjectFromPath(path);
       }
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'An unexpected error occurred';
-
       useNotificationStore.getState().add({
-        title: 'System Error',
-        message: errorMessage,
+        title: i18n.t('notifications.systemError'),
+        message: getErrorMessage(error),
         type: 'error',
       });
     }
@@ -44,8 +56,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setProjectFromPath: async (path: string) => {
     if (!FileProcessor.isValidProjectFile(path)) {
       useNotificationStore.getState().add({
-        title: 'Invalid File',
-        message: 'Please drop a .sln, .slnx or .csproj file.',
+        title: i18n.t('notifications.invalidFile'),
+        message: i18n.t('notifications.invalidFileMessage'),
         type: 'error',
       });
       return;
@@ -58,12 +70,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const normalizedPath = path.replace(/\\/g, '/');
 
       if (normalizedPath.endsWith('.csproj')) {
-        const projectData =
+        const result =
           await window.electronAPI.parseProjectAssets(normalizedPath);
+
+        if (!result.ok) {
+          notifyAssetsNotFound(result.assetsPath);
+          return;
+        }
+
         set({
           solutionPath: normalizedPath,
           solutionName: name,
-          projects: [projectData],
+          projects: [result.project],
         });
       } else {
         const slnContent = await window.electronAPI.readFile(normalizedPath);
@@ -77,31 +95,39 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
           normalizedPath.lastIndexOf('/'),
         );
 
-        const projectPromises = relativeProjectPaths.map(async (relPath) => {
-          const absoluteProjectPath = `${slnDir}/${relPath}`;
-          return window.electronAPI.parseProjectAssets(absoluteProjectPath);
-        });
+        const results = await Promise.all(
+          relativeProjectPaths.map((relPath) =>
+            window.electronAPI.parseProjectAssets(`${slnDir}/${relPath}`),
+          ),
+        );
 
-        const loadedProjects: Project[] = await Promise.all(projectPromises);
+        const loadedProjects: Project[] = [];
+        for (const result of results) {
+          if (result.ok) loadedProjects.push(result.project);
+          else notifyAssetsNotFound(result.assetsPath);
+        }
 
         set({
           solutionPath: normalizedPath,
           solutionName: name,
-          projects: loadedProjects.filter((project) => project !== null),
+          projects: loadedProjects,
         });
       }
 
-      useNotificationStore.getState().add({
-        title: 'Success',
-        message: `${name} with ${get().projects.length} project(s) loaded.`,
-        type: 'success',
-      });
+      if (get().projects.length > 0) {
+        useNotificationStore.getState().add({
+          title: i18n.t('notifications.success'),
+          message: i18n.t('notifications.loadedMessage', {
+            name,
+            count: get().projects.length,
+          }),
+          type: 'success',
+        });
+      }
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'An unexpected error occurred';
       useNotificationStore.getState().add({
-        title: 'Loading Failed',
-        message: errorMessage,
+        title: i18n.t('notifications.loadingFailed'),
+        message: getErrorMessage(error),
         type: 'error',
       });
     } finally {

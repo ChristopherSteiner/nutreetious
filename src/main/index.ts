@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import packageJson from '../../package.json';
 import type { UserSettings } from '../common/settings';
 import { SettingsManager } from './settings';
 import { NugetTreeManager } from './tree';
@@ -53,6 +54,19 @@ function registerIpcHandlers() {
       return await nugetTreeManager.parseProjectAssets(csprojPath);
     },
   );
+
+  ipcMain.handle('app:getInfo', () => ({
+    version: app.getVersion(),
+    electron: process.versions.electron,
+    node: process.versions.node,
+    chrome: process.versions.chrome,
+    repositoryUrl: packageJson.repository.url,
+  }));
+
+  ipcMain.handle('shell:openExternal', (_event, url: string) => {
+    if (!/^https?:\/\//.test(url)) return;
+    return shell.openExternal(url);
+  });
 }
 
 function createWindow() {

@@ -3,6 +3,15 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { NugetTreeManager } from './NugetTreeManager';
 
+async function parseProjectAssets(
+  manager: NugetTreeManager,
+  csprojPath: string,
+) {
+  const result = await manager.parseProjectAssets(csprojPath);
+  if (!result.ok) throw new Error(`Expected ok result, got ${result.reason}`);
+  return result.project;
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const sampleCsprojPath = path.join(
   __dirname,
@@ -26,7 +35,7 @@ describe('NugetTreeManager', () => {
     it('reads the project name and path from the fixture', async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
 
       expect(project.projectName).toBe('SampleProject');
       expect(project.projectPath).toBe(
@@ -37,7 +46,7 @@ describe('NugetTreeManager', () => {
     it('builds one root per resolvable direct PackageReference and ProjectReference', async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
 
       // Ghost.Package has no matching entry under targets and is dropped.
@@ -52,7 +61,7 @@ describe('NugetTreeManager', () => {
     it('resolves a package whose requested version matches the actual version', async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const newtonsoft = roots.find((pkg) => pkg.name === 'Newtonsoft.Json');
 
@@ -72,7 +81,7 @@ describe('NugetTreeManager', () => {
     it('flags a conflict when the resolved version differs from the requested range', async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const serilog = roots.find((pkg) => pkg.name === 'Serilog');
 
@@ -83,7 +92,7 @@ describe('NugetTreeManager', () => {
     it('builds transitive dependencies with isDirect: false', async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const serilog = roots.find((pkg) => pkg.name === 'Serilog');
 
@@ -101,7 +110,7 @@ describe('NugetTreeManager', () => {
     it('drops direct dependencies that have no matching entry in targets', async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
 
       expect(roots.find((pkg) => pkg.name === 'Ghost.Package')).toBeUndefined();
@@ -110,7 +119,7 @@ describe('NugetTreeManager', () => {
     it('builds a ProjectReference as a Project-typed root, resolved by csproj basename', async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const projectRef = roots.find((pkg) => pkg.name === 'Sample.ProjectRef');
 
@@ -127,7 +136,7 @@ describe('NugetTreeManager', () => {
     it("walks a ProjectReference's own package dependency as a Package node", async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const projectRef = roots.find((pkg) => pkg.name === 'Sample.ProjectRef');
       const newtonsoft = projectRef?.references.find(
@@ -146,7 +155,7 @@ describe('NugetTreeManager', () => {
     it("recognizes a ProjectReference's own project dependency as a (transitive) Project node", async () => {
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const projectRef = roots.find((pkg) => pkg.name === 'Sample.ProjectRef');
       const nested = projectRef?.references.find(
@@ -171,7 +180,7 @@ describe('NugetTreeManager', () => {
       // guessing the name from the csproj filename) is required to find it.
       const manager = new NugetTreeManager();
 
-      const project = await manager.parseProjectAssets(sampleCsprojPath);
+      const project = await parseProjectAssets(manager, sampleCsprojPath);
       const roots = project.frameworkTrees['net8.0'];
       const mismatched = roots.find((pkg) => pkg.name === 'Mismatched.Core');
 
