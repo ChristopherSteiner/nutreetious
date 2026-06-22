@@ -1,7 +1,9 @@
 import { FolderOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useProjectStore } from '../../store/useProjectStore';
 
 export function ProjectPicker() {
+  const { t } = useTranslation();
   const projectName = useProjectStore((state) => state.solutionName);
   const selectProject = useProjectStore((state) => state.selectProject);
 
@@ -13,7 +15,7 @@ export function ProjectPicker() {
     >
       <FolderOpen size={14} className="text-blue-400" />
       <span className="text-xs font-medium">
-        {projectName || 'Select solution or project...'}
+        {projectName || t('projectPicker.selectPrompt')}
       </span>
     </button>
   );
