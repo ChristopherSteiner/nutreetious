@@ -4,6 +4,10 @@
   "private": true,
   "version": "0.3.1",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ChristopherSteiner/nutreetious"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder --publish never",

@@ -37,11 +37,17 @@
   "settings": {
     "title": "Settings",
     "sections": {
-      "general": "General"
+      "general": "General",
+      "about": "About"
     },
     "general": {
       "title": "General",
       "language": "Language"
+    },
+    "about": {
+      "title": "About",
+      "version": "Version",
+      "viewOnGitHub": "View on GitHub"
     }
   }
 }

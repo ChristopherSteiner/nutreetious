@@ -1,11 +1,13 @@
 import { X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSettingsModalStore } from '../../store/useSettingsModalStore';
+import { AboutSettings } from './AboutSettings';
 import { GeneralSettings } from './GeneralSettings';
 
 const SECTIONS = [
   { id: 'general', labelKey: 'settings.sections.general' },
+  { id: 'about', labelKey: 'settings.sections.about' },
 ] as const;
 
 type SectionId = (typeof SECTIONS)[number]['id'];
@@ -15,6 +17,17 @@ export function SettingsModal() {
   const close = useSettingsModalStore((state) => state.close);
   const [activeSection, setActiveSection] = useState<SectionId>('general');
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, close]);
 
   if (!isOpen) return null;
 
@@ -62,6 +75,7 @@ export function SettingsModal() {
           </div>
           <div className="flex-1 overflow-y-auto p-4">
             {activeSection === 'general' && <GeneralSettings />}
+            {activeSection === 'about' && <AboutSettings />}
           </div>
         </div>
       </div>

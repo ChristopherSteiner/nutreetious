@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
+import type { AppInfo } from '../common/app';
 import type { UserSettings } from '../common/settings';
 
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -13,4 +14,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('settings:save', settings),
   parseProjectAssets: (path: string) =>
     ipcRenderer.invoke('project:parseProjectAssets', path),
+  getAppInfo: (): Promise<AppInfo> => ipcRenderer.invoke('app:getInfo'),
+  openExternal: (url: string): Promise<void> =>
+    ipcRenderer.invoke('shell:openExternal', url),
 });
