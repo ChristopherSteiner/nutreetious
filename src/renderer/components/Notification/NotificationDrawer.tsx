@@ -1,8 +1,10 @@
 import { BellOff, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useNotificationStore, useUserSettingStore } from '../../store';
 import { formatTimestamp } from '../../utils';
 
 export function NotificationDrawer() {
+  const { t } = useTranslation();
   const { notifications, clearAll } = useNotificationStore();
   const { settings } = useUserSettingStore();
   const isDrawerOpen = settings?.windows.notificationDrawerOpen ?? false;
@@ -13,7 +15,7 @@ export function NotificationDrawer() {
     <aside className="w-80 border-l border-zinc-800 bg-zinc-950 flex flex-col h-full animate-in slide-in-from-right duration-300">
       <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50">
         <h2 className="text-sm font-semibold flex items-center gap-2">
-          Notifications
+          {t('notifications.title')}
           <span className="text-xs bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">
             {notifications.length}
           </span>
@@ -23,7 +25,7 @@ export function NotificationDrawer() {
             type="button"
             onClick={clearAll}
             className="p-1.5 hover:bg-zinc-800 rounded text-zinc-500 hover:text-red-400 transition-colors"
-            title="Alle löschen"
+            title={t('notifications.clearAll')}
           >
             <Trash2 size={14} />
           </button>
@@ -34,7 +36,7 @@ export function NotificationDrawer() {
         {notifications.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-zinc-600 gap-2">
             <BellOff size={32} strokeWidth={1} />
-            <p className="text-xs">No new notifications</p>
+            <p className="text-xs">{t('notifications.empty')}</p>
           </div>
         ) : (
           notifications.map((notification) => (

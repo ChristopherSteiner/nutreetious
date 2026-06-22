@@ -1,8 +1,10 @@
 import { Bell, BellDot } from 'lucide-react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNotificationStore, useUserSettingStore } from '../../store';
 
 export function NotificationToggleButton() {
+  const { t } = useTranslation();
   const { notifications } = useNotificationStore();
   const { settings, isLoaded, loadSettings, toggleNotificationDrawer } =
     useUserSettingStore();
@@ -36,7 +38,7 @@ export function NotificationToggleButton() {
       type="button"
       onClick={toggleNotificationDrawer}
       className={`p-1.5 rounded-md border transition-all active:scale-95 relative group ${getButtonStyles()}`}
-      title="Notifications"
+      title={t('notifications.title')}
     >
       {hasNotifications ? <BellDot size={16} /> : <Bell size={16} />}
 

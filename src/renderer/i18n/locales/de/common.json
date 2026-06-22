@@ -1,6 +1,38 @@
 {
   "projectPicker": {
-    "selectPrompt": "Solution oder Projekt auswählen"
+    "selectPrompt": "Solution oder Projekt auswählen..."
+  },
+  "toolbar": {
+    "searchPlaceholder": "Abhängigkeiten suchen...",
+    "clearSearch": "Suche löschen",
+    "refreshAssets": "Assets aktualisieren",
+    "settings": "Einstellungen"
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "clearAll": "Alle löschen",
+    "empty": "Keine neuen Benachrichtigungen",
+    "systemError": "Systemfehler",
+    "invalidFile": "Ungültige Datei",
+    "invalidFileMessage": "Bitte legen Sie eine .sln, .slnx oder .csproj-Datei hier ab.",
+    "loadingFailed": "Laden fehlgeschlagen",
+    "success": "Erfolgreich",
+    "loadedMessage": "{{name}} mit {{count}} Projekt(en) geladen.",
+    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
+  },
+  "overlay": {
+    "digesting": "Anfrage wird verdaut...",
+    "dropToAnalyze": "Loslassen zum Analysieren",
+    "supportedFiles": ".sln, .slnx oder .csproj"
+  },
+  "tree": {
+    "digesting": "Verdauen...",
+    "noProjectLoaded": "Kein Projekt geladen.",
+    "dragPrompt": "Ziehen Sie eine .sln, .slnx oder .csproj-Datei hierher, um zu starten.",
+    "noMatches": "Keine Abhängigkeiten entsprechen \"{{query}}\".",
+    "requestedResolved": "Angefordert: {{requested}} | Aufgelöst: {{resolved}}",
+    "version": "Version: {{version}}",
+    "projectReference": "Project reference"
   },
   "settings": {
     "title": "Einstellungen",

@@ -2,6 +2,38 @@
   "projectPicker": {
     "selectPrompt": "Select solution or project..."
   },
+  "toolbar": {
+    "searchPlaceholder": "Search dependencies...",
+    "clearSearch": "Clear search",
+    "refreshAssets": "Refresh Assets",
+    "settings": "Settings"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "clearAll": "Clear all",
+    "empty": "No new notifications",
+    "systemError": "System Error",
+    "invalidFile": "Invalid File",
+    "invalidFileMessage": "Please drop a .sln, .slnx or .csproj file.",
+    "loadingFailed": "Loading Failed",
+    "success": "Success",
+    "loadedMessage": "{{name}} with {{count}} project(s) loaded.",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "overlay": {
+    "digesting": "Digesting request...",
+    "dropToAnalyze": "Drop to analyze",
+    "supportedFiles": ".sln, .slnx or .csproj"
+  },
+  "tree": {
+    "digesting": "Digesting...",
+    "noProjectLoaded": "No project loaded.",
+    "dragPrompt": "Drag a .sln, .slnx or .csproj file here to start.",
+    "noMatches": "No dependencies match \"{{query}}\".",
+    "requestedResolved": "Requested: {{requested}} | Resolved: {{resolved}}",
+    "version": "Version: {{version}}",
+    "projectReference": "Project reference"
+  },
   "settings": {
     "title": "Settings",
     "sections": {

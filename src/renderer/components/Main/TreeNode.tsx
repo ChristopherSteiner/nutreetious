@@ -5,6 +5,7 @@ import {
   FolderCode,
   Package as PackageIcon,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Package } from '../../../common/tree';
 import { HighlightText } from '../Common';
 
@@ -20,11 +21,15 @@ interface TreeNodeProps {
 }
 
 export function TreeNode({ node, searchQuery, onToggle }: TreeNodeProps) {
+  const { t } = useTranslation();
   const tooltipText = node.pkg.hasConflict
-    ? `Requested: ${node.pkg.referencedVersion} | Resolved: ${node.pkg.actualVersion}`
+    ? t('tree.requestedResolved', {
+        requested: node.pkg.referencedVersion,
+        resolved: node.pkg.actualVersion,
+      })
     : node.pkg.actualVersion
-      ? `Version: ${node.pkg.actualVersion}`
-      : 'Project reference';
+      ? t('tree.version', { version: node.pkg.actualVersion })
+      : t('tree.projectReference');
 
   return (
     <button

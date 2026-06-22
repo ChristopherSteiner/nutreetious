@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Project } from '../../common/tree';
+import i18n from '../i18n';
 import { SolutionParser } from '../services';
 import { FileProcessor } from '../services/FileProcessor';
 import { useNotificationStore } from './useNotificationStore';
@@ -31,10 +32,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       }
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : 'An unexpected error occurred';
+        error instanceof Error
+          ? error.message
+          : i18n.t('notifications.unexpectedError');
 
       useNotificationStore.getState().add({
-        title: 'System Error',
+        title: i18n.t('notifications.systemError'),
         message: errorMessage,
         type: 'error',
       });
@@ -44,8 +47,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setProjectFromPath: async (path: string) => {
     if (!FileProcessor.isValidProjectFile(path)) {
       useNotificationStore.getState().add({
-        title: 'Invalid File',
-        message: 'Please drop a .sln, .slnx or .csproj file.',
+        title: i18n.t('notifications.invalidFile'),
+        message: i18n.t('notifications.invalidFileMessage'),
         type: 'error',
       });
       return;
@@ -92,15 +95,20 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       }
 
       useNotificationStore.getState().add({
-        title: 'Success',
-        message: `${name} with ${get().projects.length} project(s) loaded.`,
+        title: i18n.t('notifications.success'),
+        message: i18n.t('notifications.loadedMessage', {
+          name,
+          count: get().projects.length,
+        }),
         type: 'success',
       });
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : 'An unexpected error occurred';
+        error instanceof Error
+          ? error.message
+          : i18n.t('notifications.unexpectedError');
       useNotificationStore.getState().add({
-        title: 'Loading Failed',
+        title: i18n.t('notifications.loadingFailed'),
         message: errorMessage,
         type: 'error',
       });

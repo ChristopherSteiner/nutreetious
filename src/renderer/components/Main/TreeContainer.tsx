@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronRight, Info, LayoutGrid } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Project } from '../../../common/tree';
 import { useProjectStore } from '../../store/useProjectStore';
 import { filterTree } from '../../utils';
@@ -7,6 +8,7 @@ import { Logo } from '../Common';
 import { NugetTree } from './NugetTree';
 
 export function TreeContainer() {
+  const { t } = useTranslation();
   const { solutionPath, solutionName, projects, isLoading, searchQuery } =
     useProjectStore();
 
@@ -16,7 +18,7 @@ export function TreeContainer() {
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-sky-500/20 border-t-sky-500 rounded-full animate-spin" />
           <p className="text-zinc-500 text-sm animate-pulse font-medium">
-            Digesting...
+            {t('tree.digesting')}
           </p>
         </div>
       </div>
@@ -32,9 +34,9 @@ export function TreeContainer() {
           </div>
           <div className="relative z-10">
             <p className="text-zinc-500 italic text-sm text-center leading-relaxed">
-              No project loaded.
+              {t('tree.noProjectLoaded')}
               <br />
-              Drag a .sln, .slnx or .csproj file here to start.
+              {t('tree.dragPrompt')}
             </p>
           </div>
         </div>
@@ -78,6 +80,7 @@ function ProjectSection({
   project: Project;
   searchQuery: string;
 }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(true);
   const frameworkEntries = Object.entries(project.frameworkTrees).filter(
     ([, roots]) => !searchQuery || filterTree(roots, searchQuery).length > 0,
@@ -126,7 +129,7 @@ function ProjectSection({
           ) : (
             <p className="flex items-center gap-1.5 text-xs text-zinc-400">
               <Info size={13} className="text-zinc-500 shrink-0" />
-              No dependencies match &ldquo;{searchQuery}&rdquo;.
+              {t('tree.noMatches', { query: searchQuery })}
             </p>
           )}
         </div>
