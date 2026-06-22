@@ -1,3 +1,5 @@
+import { escapeRegExp } from '../../utils';
+
 interface HighlightProps {
   text: string;
   query: string;
@@ -13,7 +15,7 @@ export function HighlightText({
     return <>{text}</>;
   }
 
-  const parts = text.split(new RegExp(`(${query})`, 'gi'));
+  const parts = text.split(new RegExp(`(${escapeRegExp(query)})`, 'gi'));
 
   return (
     <>

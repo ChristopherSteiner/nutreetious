@@ -73,6 +73,7 @@ function createWindow() {
   const isDev = !!process.env.VITE_DEV_SERVER_URL;
 
   win = new BrowserWindow({
+    title: 'Nutreetious',
     width: 1200,
     height: 800,
     minWidth: 900,
