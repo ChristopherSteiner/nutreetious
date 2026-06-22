@@ -18,7 +18,11 @@
     "loadingFailed": "Laden fehlgeschlagen",
     "success": "Erfolgreich",
     "loadedMessage": "{{name}} mit {{count}} Projekt(en) geladen.",
-    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten"
+    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten",
+    "copy": "In die Zwischenablage kopieren",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "assetsNotFound": "Kein Build Output gefunden. Projekt zuerst neu builden oder restoren.\n{{path}}"
   },
   "overlay": {
     "digesting": "Anfrage wird verdaut...",

@@ -1,6 +1,6 @@
 import type { AppInfo } from './common/app';
 import type { UserSettings } from './common/settings';
-import type { Project } from './common/tree';
+import type { ParseProjectAssetsResult } from './common/tree';
 
 export interface IElectronAPI {
   minimize: () => void;
@@ -11,7 +11,7 @@ export interface IElectronAPI {
   getFilePath: (file: File) => string;
   getSettings: () => Promise<UserSettings>;
   saveSettings: (settings: UserSettings) => Promise<void>;
-  parseProjectAssets: (csprojPath: string) => Promise<Project>;
+  parseProjectAssets: (csprojPath: string) => Promise<ParseProjectAssetsResult>;
   getAppInfo: () => Promise<AppInfo>;
   openExternal: (url: string) => Promise<void>;
 }

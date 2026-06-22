@@ -18,7 +18,11 @@
     "loadingFailed": "Loading Failed",
     "success": "Success",
     "loadedMessage": "{{name}} with {{count}} project(s) loaded.",
-    "unexpectedError": "An unexpected error occurred"
+    "unexpectedError": "An unexpected error occurred",
+    "copy": "Copy to clipboard",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "assetsNotFound": "No build output found. Run a build or restore for this project first.\n{{path}}"
   },
   "overlay": {
     "digesting": "Digesting request...",

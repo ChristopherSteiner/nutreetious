@@ -1,7 +1,7 @@
 import { BellOff, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationStore, useUserSettingStore } from '../../store';
-import { formatTimestamp } from '../../utils';
+import { NotificationItem } from './NotificationItem';
 
 export function NotificationDrawer() {
   const { t } = useTranslation();
@@ -40,33 +40,10 @@ export function NotificationDrawer() {
           </div>
         ) : (
           notifications.map((notification) => (
-            <div
+            <NotificationItem
               key={notification.id}
-              className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 group relative"
-            >
-              <div className="flex justify-between items-start mb-1">
-                <span
-                  className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
-                    notification.type === 'error'
-                      ? 'bg-red-500/10 text-red-500'
-                      : 'bg-emerald-500/10 text-emerald-500'
-                  }`}
-                >
-                  {notification.type}
-                </span>
-                <span className="text-[10px] text-zinc-500 font-mono">
-                  {formatTimestamp(notification.timestamp)}
-                </span>
-              </div>
-              <p className="text-sm font-medium text-zinc-200 leading-tight">
-                {notification.title}
-              </p>
-              {notification.message && (
-                <p className="text-xs text-zinc-500 mt-1 line-clamp-2">
-                  {notification.message}
-                </p>
-              )}
-            </div>
+              notification={notification}
+            />
           ))
         )}
       </div>
