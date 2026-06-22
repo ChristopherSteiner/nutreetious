@@ -1,5 +1,15 @@
 {
   "projectPicker": {
     "selectPrompt": "Solution oder Projekt auswählen"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "sections": {
+      "general": "Allgemein"
+    },
+    "general": {
+      "title": "Allgemein",
+      "language": "Sprache"
+    }
   }
 }

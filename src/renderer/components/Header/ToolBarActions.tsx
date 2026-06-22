@@ -1,5 +1,6 @@
 import { RefreshCw, Settings } from 'lucide-react';
 import { useProjectStore } from '../../store/useProjectStore';
+import { useSettingsModalStore } from '../../store/useSettingsModalStore';
 import { NotificationToggleButton } from '../Notification/NotificationToggleButton';
 
 export function ToolBarActions() {
@@ -8,11 +9,7 @@ export function ToolBarActions() {
   const setProjectFromPath = useProjectStore(
     (state) => state.setProjectFromPath,
   );
-
-  // todo auslagern
-  const handleSettingsClick = () => {
-    console.log('Settings-Modal öffnen...');
-  };
+  const openSettings = useSettingsModalStore((state) => state.open);
 
   const handleRefreshClick = () => {
     if (solutionPath) setProjectFromPath(solutionPath);
@@ -38,7 +35,7 @@ export function ToolBarActions() {
 
       <button
         type="button"
-        onClick={handleSettingsClick}
+        onClick={openSettings}
         className="p-1.5 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 rounded-md transition-all active:scale-90"
         title="Settings"
       >
