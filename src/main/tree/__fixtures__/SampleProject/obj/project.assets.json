@@ -44,6 +44,14 @@
     "restore": {
       "projectName": "SampleProject",
       "projectPath": "C:/Fake/SampleProject/SampleProject.csproj",
+      "packagesPath": "C:/Fake/packages",
+      "configFilePaths": [
+        "C:/Fake/NuGet.Config",
+        "C:/Users/Fake/AppData/Roaming/NuGet/NuGet.Config"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
       "frameworks": {
         "net8.0": {
           "projectReferences": {

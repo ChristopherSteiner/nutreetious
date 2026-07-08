@@ -3,6 +3,9 @@ export interface AssetsJson {
     restore: {
       projectName: string;
       projectPath: string;
+      packagesPath?: string;
+      configFilePaths?: string[];
+      sources?: Record<string, unknown>;
       frameworks: Record<
         string,
         {

@@ -2,11 +2,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 import type { Package } from '../../../common/tree';
 import { useProjectStore } from '../../store';
-import { filterTree } from '../../utils';
+import { useDependencyPathsStore } from '../../store/useDependencyPathsStore';
+import { useUserSettingStore } from '../../store/useUserSettingStore';
+import { applyTreeFilters } from '../../utils';
 import { TreeNode } from './TreeNode';
 
 interface Props {
   data: Package[];
+  projectName: string;
+  framework: string;
 }
 
 interface FlatNode {
@@ -30,15 +34,26 @@ const getAllCollapsibleIds = (nodes: Package[]) => {
   return ids;
 };
 
-export const NugetTree = ({ data }: Props) => {
+export const NugetTree = ({ data, projectName, framework }: Props) => {
   const searchQuery = useProjectStore((state) => state.searchQuery);
+  const showConflictsOnly = useProjectStore((state) => state.showConflictsOnly);
+  const treeCommand = useProjectStore((state) => state.treeCommand);
+  const hideProjectReferences = useUserSettingStore(
+    (state) => state.settings?.filters.hideProjectReferences ?? false,
+  );
+  const openDependencyPaths = useDependencyPathsStore((state) => state.open);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [isAtBottom, setIsAtBottom] = useState(false);
   const lastDataRef = useRef<Package[] | null>(null);
 
   const filteredPackages = useMemo(
-    () => filterTree(data, searchQuery),
-    [data, searchQuery],
+    () =>
+      applyTreeFilters(data, {
+        query: searchQuery,
+        hideProjectReferences,
+        conflictsOnly: showConflictsOnly,
+      }),
+    [data, searchQuery, hideProjectReferences, showConflictsOnly],
   );
 
   useEffect(() => {
@@ -52,6 +67,20 @@ export const NugetTree = ({ data }: Props) => {
       lastDataRef.current = data;
     }
   }, [data, searchQuery, filteredPackages]);
+
+  const filteredPackagesRef = useRef(filteredPackages);
+  filteredPackagesRef.current = filteredPackages;
+  const handledCommandSeq = useRef(treeCommand?.seq ?? 0);
+
+  useEffect(() => {
+    if (!treeCommand || treeCommand.seq === handledCommandSeq.current) return;
+    handledCommandSeq.current = treeCommand.seq;
+    setExpandedIds(
+      treeCommand.mode === 'expand'
+        ? getAllCollapsibleIds(filteredPackagesRef.current)
+        : new Set(),
+    );
+  }, [treeCommand]);
 
   const flattenedData = useMemo(() => {
     const flat: FlatNode[] = [];
@@ -74,6 +103,15 @@ export const NugetTree = ({ data }: Props) => {
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
+    });
+  };
+
+  const showPathsFor = (pkg: Package) => {
+    openDependencyPaths({
+      packageName: pkg.name,
+      projectName,
+      framework,
+      roots: data,
     });
   };
 
@@ -102,6 +140,7 @@ export const NugetTree = ({ data }: Props) => {
               node={node}
               searchQuery={searchQuery}
               onToggle={toggleNode}
+              onShowPaths={showPathsFor}
             />
           )}
         />

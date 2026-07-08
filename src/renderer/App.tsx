@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Header } from './components/Header/Header';
+import { DependencyPathsModal } from './components/Main/DependencyPathsModal';
 import { MainWindow } from './components/Main/MainWindow';
 import { NotificationDrawer } from './components/Notification/NotificationDrawer';
 import { SettingsModal } from './components/Settings';
@@ -32,6 +33,7 @@ function App() {
         </div>
       </main>
       <SettingsModal />
+      <DependencyPathsModal />
     </div>
   );
 }

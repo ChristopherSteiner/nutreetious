@@ -8,7 +8,13 @@ export interface UserSettings {
   windows: {
     notificationDrawerOpen: boolean;
   };
+  filters: {
+    hideProjectReferences: boolean;
+  };
+  recentSolutions: string[];
 }
+
+export const MAX_RECENT_SOLUTIONS = 10;
 
 export const DEFAULT_SETTINGS: UserSettings = {
   appearance: {
@@ -20,4 +26,8 @@ export const DEFAULT_SETTINGS: UserSettings = {
   windows: {
     notificationDrawerOpen: false,
   },
+  filters: {
+    hideProjectReferences: false,
+  },
+  recentSolutions: [],
 };

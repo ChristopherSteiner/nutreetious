@@ -7,7 +7,7 @@ export function SearchBar() {
   const { searchQuery, setSearchQuery } = useProjectStore();
 
   return (
-    <div className="relative group w-64">
+    <div className="relative group w-full">
       <Search
         size={14}
         className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${

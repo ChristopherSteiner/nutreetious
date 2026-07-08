@@ -7,6 +7,7 @@ import type {
   PackageType,
   ParseProjectAssetsResult,
   Project,
+  RestoreInfo,
 } from '../../common/tree';
 
 export class NugetTreeManager {
@@ -33,6 +34,7 @@ export class NugetTreeManager {
     const data: AssetsJson = JSON.parse(rawData);
 
     const { projectName, projectPath } = data.project.restore;
+    const restoreInfo = await this.buildRestoreInfo(data, assetsPath);
     const frameworkTrees: Record<string, Package[]> = {};
     const projectRefNamesByPath = this.buildProjectRefNameLookup(
       data.libraries,
@@ -71,8 +73,89 @@ export class NugetTreeManager {
       frameworkTrees[frameworkName] = roots;
     }
 
-    const project: Project = { projectName, projectPath, frameworkTrees };
+    const project: Project = {
+      projectName,
+      projectPath,
+      restoreInfo,
+      frameworkTrees,
+    };
+    await this.annotatePackageSources(project, restoreInfo.packagesPath);
     return { ok: true, project };
+  }
+
+  private async buildRestoreInfo(
+    data: AssetsJson,
+    assetsPath: string,
+  ): Promise<RestoreInfo> {
+    const restore = data.project.restore;
+
+    let restoredAt: string | null = null;
+    try {
+      restoredAt = (await fs.stat(assetsPath)).mtime.toISOString();
+    } catch {
+      // stats are cosmetic; the tree still works without a timestamp
+    }
+
+    return {
+      assetsPath,
+      restoredAt,
+      packagesPath: restore.packagesPath ?? null,
+      configFilePaths: restore.configFilePaths ?? [],
+      sources: Object.keys(restore.sources ?? {}),
+    };
+  }
+
+  // NuGet writes a .nupkg.metadata file (containing the download source)
+  // next to every package in the global packages folder. Reading it is the
+  // only offline way to tell which feed a package actually came from.
+  private async annotatePackageSources(
+    project: Project,
+    packagesPath: string | null,
+  ): Promise<void> {
+    if (!packagesPath) return;
+
+    const sourceByPackage = new Map<string, Promise<string | null>>();
+    const lookupSource = (name: string, version: string) => {
+      const key = `${name.toLowerCase()}/${version.toLowerCase()}`;
+      let pending = sourceByPackage.get(key);
+      if (!pending) {
+        pending = this.readNupkgSource(path.join(packagesPath, key));
+        sourceByPackage.set(key, pending);
+      }
+      return pending;
+    };
+
+    const tasks: Promise<void>[] = [];
+    const walk = (nodes: Package[]) => {
+      for (const node of nodes) {
+        if (node.type === 'Package' && node.actualVersion) {
+          tasks.push(
+            lookupSource(node.name, node.actualVersion).then((source) => {
+              node.source = source;
+            }),
+          );
+        }
+        walk(node.references);
+      }
+    };
+    for (const roots of Object.values(project.frameworkTrees)) walk(roots);
+
+    await Promise.all(tasks);
+  }
+
+  private async readNupkgSource(packageDir: string): Promise<string | null> {
+    try {
+      const raw = await fs.readFile(
+        path.join(packageDir, '.nupkg.metadata'),
+        'utf-8',
+      );
+      const metadata: { source?: unknown } = JSON.parse(raw);
+      return typeof metadata.source === 'string' && metadata.source !== ''
+        ? metadata.source
+        : null;
+    } catch {
+      return null;
+    }
   }
 
   private normalizePath(p: string): string {
@@ -137,6 +220,7 @@ export class NugetTreeManager {
       type,
       isDirect,
       hasConflict,
+      source: null,
       references: [],
     };
 

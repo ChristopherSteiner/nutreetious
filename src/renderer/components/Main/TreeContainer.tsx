@@ -2,10 +2,15 @@ import { ChevronDown, ChevronRight, Info, LayoutGrid } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Project } from '../../../common/tree';
+import { FileProcessor } from '../../services';
 import { useProjectStore } from '../../store/useProjectStore';
-import { filterTree } from '../../utils';
+import { useUserSettingStore } from '../../store/useUserSettingStore';
+import { applyTreeFilters, type TreeFilterOptions } from '../../utils';
 import { Logo } from '../Common';
 import { NugetTree } from './NugetTree';
+import { RestoreInfoPanel } from './RestoreInfoPanel';
+
+const NO_RECENTS: string[] = [];
 
 export function TreeContainer() {
   const { t } = useTranslation();
@@ -32,12 +37,13 @@ export function TreeContainer() {
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] select-none">
             <Logo className="w-4/5 h-4/5" />
           </div>
-          <div className="relative z-10">
+          <div className="relative z-10 flex flex-col items-center">
             <p className="text-zinc-500 italic text-sm text-center leading-relaxed">
               {t('tree.noProjectLoaded')}
               <br />
               {t('tree.dragPrompt')}
             </p>
+            <RecentSolutions />
           </div>
         </div>
       </div>
@@ -73,6 +79,43 @@ export function TreeContainer() {
   );
 }
 
+function RecentSolutions() {
+  const { t } = useTranslation();
+  const recentSolutions = useUserSettingStore(
+    (state) => state.settings?.recentSolutions ?? NO_RECENTS,
+  );
+  const setProjectFromPath = useProjectStore(
+    (state) => state.setProjectFromPath,
+  );
+
+  if (recentSolutions.length === 0) return null;
+
+  return (
+    <div className="mt-8 w-96 max-w-full">
+      <p className="text-[9px] font-black tracking-widest uppercase text-zinc-600 text-center mb-2">
+        {t('projectPicker.recentSolutions')}
+      </p>
+      <div className="flex flex-col gap-1">
+        {recentSolutions.slice(0, 5).map((path) => (
+          <button
+            key={path}
+            type="button"
+            onClick={() => setProjectFromPath(path)}
+            className="px-3 py-1.5 rounded-md border border-zinc-800/60 bg-zinc-900/40 hover:bg-zinc-800/60 hover:border-zinc-700 text-left transition-colors"
+          >
+            <span className="block text-xs font-medium text-zinc-300 truncate">
+              {FileProcessor.getFileName(path)}
+            </span>
+            <span className="block text-[10px] font-mono text-zinc-600 truncate">
+              {path}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProjectSection({
   project,
   searchQuery,
@@ -82,8 +125,21 @@ function ProjectSection({
 }) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(true);
+  const showConflictsOnly = useProjectStore((state) => state.showConflictsOnly);
+  const hideProjectReferences = useUserSettingStore(
+    (state) => state.settings?.filters.hideProjectReferences ?? false,
+  );
+
+  const filterOptions: TreeFilterOptions = {
+    query: searchQuery,
+    hideProjectReferences,
+    conflictsOnly: showConflictsOnly,
+  };
+  const hasActiveFilter =
+    !!searchQuery || hideProjectReferences || showConflictsOnly;
   const frameworkEntries = Object.entries(project.frameworkTrees).filter(
-    ([, roots]) => !searchQuery || filterTree(roots, searchQuery).length > 0,
+    ([, roots]) =>
+      !hasActiveFilter || applyTreeFilters(roots, filterOptions).length > 0,
   );
 
   return (
@@ -109,6 +165,7 @@ function ProjectSection({
 
       {isOpen && (
         <div className="space-y-8 ml-3 border-l border-zinc-900 pl-6 py-2 animate-in fade-in slide-in-from-top-1 duration-200">
+          <RestoreInfoPanel project={project} />
           {frameworkEntries.length > 0 ? (
             frameworkEntries.map(([framework, roots]) => (
               <section key={framework} className="relative">
@@ -122,14 +179,20 @@ function ProjectSection({
                 </div>
 
                 <div className="rounded-md overflow-hidden">
-                  <NugetTree data={roots} />
+                  <NugetTree
+                    data={roots}
+                    projectName={project.projectName}
+                    framework={framework}
+                  />
                 </div>
               </section>
             ))
           ) : (
             <p className="flex items-center gap-1.5 text-xs text-zinc-400">
               <Info size={13} className="text-zinc-500 shrink-0" />
-              {t('tree.noMatches', { query: searchQuery })}
+              {searchQuery
+                ? t('tree.noMatches', { query: searchQuery })
+                : t('tree.noFilterMatches')}
             </p>
           )}
         </div>

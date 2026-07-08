@@ -18,4 +18,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getAppInfo: (): Promise<AppInfo> => ipcRenderer.invoke('app:getInfo'),
   openExternal: (url: string): Promise<void> =>
     ipcRenderer.invoke('shell:openExternal', url),
+  revealInFolder: (targetPath: string): Promise<void> =>
+    ipcRenderer.invoke('shell:revealInFolder', targetPath),
 });

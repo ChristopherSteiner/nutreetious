@@ -1,3 +1,13 @@
-export { formatTimestamp } from './DateUtils';
+export { formatDateTime, formatTimestamp } from './DateUtils';
+export { getFeedDisplayName, NUGET_ORG_LABEL } from './FeedUtils';
 export { escapeRegExp } from './RegexUtils';
-export { filterTree } from './TreeUtils';
+export {
+  applyTreeFilters,
+  collectConflicts,
+  filterConflictChains,
+  filterOutProjectNodes,
+  filterTree,
+  findDependencyPaths,
+  MAX_DEPENDENCY_PATHS,
+  type TreeFilterOptions,
+} from './TreeUtils';

@@ -1,12 +1,19 @@
 {
   "projectPicker": {
-    "selectPrompt": "Select solution or project..."
+    "selectPrompt": "Select solution or project...",
+    "recentSolutions": "Recent solutions",
+    "removeRecent": "Remove from list"
   },
   "toolbar": {
     "searchPlaceholder": "Search dependencies...",
     "clearSearch": "Clear search",
     "refreshAssets": "Refresh Assets",
-    "settings": "Settings"
+    "settings": "Settings",
+    "hideProjectRefs": "Hide project references",
+    "showProjectRefs": "Show project references",
+    "conflictsOnly": "Show only version conflicts",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all"
   },
   "notifications": {
     "title": "Notifications",
@@ -34,9 +41,30 @@
     "noProjectLoaded": "No project loaded.",
     "dragPrompt": "Drag a .sln, .slnx or .csproj file here to start.",
     "noMatches": "No dependencies match \"{{query}}\".",
+    "noFilterMatches": "No dependencies match the active filters.",
     "requestedResolved": "Requested: {{requested}} | Resolved: {{resolved}}",
     "version": "Version: {{version}}",
-    "projectReference": "Project reference"
+    "projectReference": "Project reference",
+    "source": "Source: {{source}}",
+    "showPaths": "Show dependency paths"
+  },
+  "restoreInfo": {
+    "title": "Restore info",
+    "summary": "{{feeds}} feed(s) · {{configs}} config(s)",
+    "restoredAt": "Last restore: {{date}}",
+    "feeds": "Package sources",
+    "configs": "NuGet config files",
+    "noConfigs": "No config files recorded in the assets file.",
+    "paths": "Paths",
+    "packagesFolder": "packages folder",
+    "assetsFile": "assets file",
+    "packageCount": "{{count}} pkg(s)",
+    "reveal": "Show in Explorer"
+  },
+  "paths": {
+    "title": "Dependency paths for",
+    "count": "{{count}} path(s) found",
+    "truncated": "Only the first {{count}} paths are shown."
   },
   "settings": {
     "title": "Settings",

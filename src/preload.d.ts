@@ -14,6 +14,7 @@ export interface IElectronAPI {
   parseProjectAssets: (csprojPath: string) => Promise<ParseProjectAssetsResult>;
   getAppInfo: () => Promise<AppInfo>;
   openExternal: (url: string) => Promise<void>;
+  revealInFolder: (targetPath: string) => Promise<void>;
 }
 
 declare global {
