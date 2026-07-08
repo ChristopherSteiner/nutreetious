@@ -1,12 +1,19 @@
 {
   "projectPicker": {
-    "selectPrompt": "Solution oder Projekt auswählen..."
+    "selectPrompt": "Solution oder Projekt auswählen...",
+    "recentSolutions": "Zuletzt geöffnet",
+    "removeRecent": "Aus der Liste entfernen"
   },
   "toolbar": {
     "searchPlaceholder": "Abhängigkeiten suchen...",
     "clearSearch": "Suche löschen",
     "refreshAssets": "Assets aktualisieren",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "hideProjectRefs": "Projektreferenzen ausblenden",
+    "showProjectRefs": "Projektreferenzen einblenden",
+    "conflictsOnly": "Nur Versionskonflikte anzeigen",
+    "expandAll": "Alle aufklappen",
+    "collapseAll": "Alle zuklappen"
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -34,9 +41,30 @@
     "noProjectLoaded": "Kein Projekt geladen.",
     "dragPrompt": "Ziehen Sie eine .sln, .slnx oder .csproj-Datei hierher, um zu starten.",
     "noMatches": "Keine Abhängigkeiten entsprechen \"{{query}}\".",
+    "noFilterMatches": "Keine Abhängigkeiten entsprechen den aktiven Filtern.",
     "requestedResolved": "Angefordert: {{requested}} | Aufgelöst: {{resolved}}",
     "version": "Version: {{version}}",
-    "projectReference": "Project reference"
+    "projectReference": "Project reference",
+    "source": "Quelle: {{source}}",
+    "showPaths": "Abhängigkeitspfade anzeigen"
+  },
+  "restoreInfo": {
+    "title": "Restore-Info",
+    "summary": "{{feeds}} Feed(s) · {{configs}} Config(s)",
+    "restoredAt": "Letzter Restore: {{date}}",
+    "feeds": "Paketquellen",
+    "configs": "NuGet-Konfigurationsdateien",
+    "noConfigs": "Keine Konfigurationsdateien im Assets-File vermerkt.",
+    "paths": "Pfade",
+    "packagesFolder": "Packages-Ordner",
+    "assetsFile": "Assets-Datei",
+    "packageCount": "{{count}} Paket(e)",
+    "reveal": "Im Explorer anzeigen"
+  },
+  "paths": {
+    "title": "Abhängigkeitspfade für",
+    "count": "{{count}} Pfad(e) gefunden",
+    "truncated": "Nur die ersten {{count}} Pfade werden angezeigt."
   },
   "settings": {
     "title": "Einstellungen",

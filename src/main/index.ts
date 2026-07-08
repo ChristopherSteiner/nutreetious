@@ -67,6 +67,11 @@ function registerIpcHandlers() {
     if (!/^https?:\/\//.test(url)) return;
     return shell.openExternal(url);
   });
+
+  ipcMain.handle('shell:revealInFolder', (_event, targetPath: string) => {
+    if (typeof targetPath !== 'string' || targetPath.length === 0) return;
+    shell.showItemInFolder(path.normalize(targetPath));
+  });
 }
 
 function createWindow() {

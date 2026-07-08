@@ -12,5 +12,9 @@ export interface Package {
   type: PackageType;
   isDirect: boolean;
   hasConflict: boolean;
+  // Feed URL (or local folder) the package was restored from, read from the
+  // .nupkg.metadata file in the global packages folder. Null for projects,
+  // frameworks, and packages whose metadata file is missing the source.
+  source: string | null;
   references: Package[];
 }

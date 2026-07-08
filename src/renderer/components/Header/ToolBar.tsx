@@ -1,3 +1,4 @@
+import { FilterToggles } from './FilterToggles';
 import { ProjectPicker } from './ProjectPicker';
 import { SearchBar } from './SearchBar';
 import { ToolBarActions } from './ToolBarActions';
@@ -13,8 +14,9 @@ export function ToolBar() {
       </div>
 
       <div className="flex justify-center">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md flex items-center gap-1.5">
           <SearchBar />
+          <FilterToggles />
         </div>
       </div>
 

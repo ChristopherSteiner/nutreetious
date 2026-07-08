@@ -4,6 +4,7 @@ import i18n from '../i18n';
 import { SolutionParser } from '../services';
 import { FileProcessor } from '../services/FileProcessor';
 import { useNotificationStore } from './useNotificationStore';
+import { useUserSettingStore } from './useUserSettingStore';
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error
@@ -19,6 +20,11 @@ function notifyAssetsNotFound(assetsPath: string) {
   });
 }
 
+export interface TreeCommand {
+  mode: 'expand' | 'collapse';
+  seq: number;
+}
+
 interface ProjectState {
   solutionPath: string | null;
   solutionName: string | null;
@@ -29,6 +35,11 @@ interface ProjectState {
   setIsLoading: (loading: boolean) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  showConflictsOnly: boolean;
+  toggleShowConflictsOnly: () => void;
+  treeCommand: TreeCommand | null;
+  expandAll: () => void;
+  collapseAll: () => void;
 }
 
 export const useProjectStore = create<ProjectState>((set, get) => ({
@@ -37,6 +48,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   projects: [],
   isLoading: false,
   searchQuery: '',
+  showConflictsOnly: false,
+  treeCommand: null,
 
   selectProject: async () => {
     try {
@@ -115,6 +128,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       }
 
       if (get().projects.length > 0) {
+        useUserSettingStore.getState().addRecentSolution(normalizedPath);
         useNotificationStore.getState().add({
           title: i18n.t('notifications.success'),
           message: i18n.t('notifications.loadedMessage', {
@@ -138,4 +152,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setIsLoading: (loading: boolean) => set({ isLoading: loading }),
 
   setSearchQuery: (query: string) => set({ searchQuery: query }),
+
+  toggleShowConflictsOnly: () =>
+    set((state) => ({ showConflictsOnly: !state.showConflictsOnly })),
+
+  expandAll: () =>
+    set((state) => ({
+      treeCommand: { mode: 'expand', seq: (state.treeCommand?.seq ?? 0) + 1 },
+    })),
+
+  collapseAll: () =>
+    set((state) => ({
+      treeCommand: { mode: 'collapse', seq: (state.treeCommand?.seq ?? 0) + 1 },
+    })),
 }));
