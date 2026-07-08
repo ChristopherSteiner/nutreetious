@@ -2,7 +2,7 @@
   "name": "nutreetious",
   "author": "Christopher Steiner <shiffty.hates.spam@gmail.com>",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.5.1",
   "type": "module",
   "repository": {
     "type": "git",
